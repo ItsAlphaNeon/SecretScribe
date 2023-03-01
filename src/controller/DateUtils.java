@@ -1,6 +1,7 @@
 package controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
@@ -11,12 +12,15 @@ public class DateUtils {
         return date;
     }
 
-
     public static String getString(LocalDate date) {
         return formatter.format(date);
     }
 
     public static boolean inRange(LocalDate date, LocalDate minDate, LocalDate maxDate) {
         return (date.isAfter(minDate) && date.isBefore(maxDate) || date.isEqual(minDate) || date.isEqual(maxDate));
+    }
+
+    public static LocalTime getTime() {
+        return LocalTime.now();
     }
 }

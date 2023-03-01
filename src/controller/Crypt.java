@@ -1,5 +1,6 @@
 package controller;
-import view.UserInput;
+
+import view.ChatWindow;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

@@ -1,4 +1,4 @@
-package view;
+package controller;
 
 import controller.DateUtils;
 
@@ -24,19 +24,9 @@ public class UserInput {
         return getString();
     }
 
-    public static String getPin(String prompt) {
-        System.out.print(prompt);
-        String pin;
+    public static Boolean isValidPin(String pin) {
         // check if pin is 4 digits and is an integer
-        while (true) {
-            pin = getString();
-            if (pin.length() == 4 && isInt(pin)) {
-                break;
-            }
-            System.out.println("Invalid pin");
-        }
-
-        return pin;
+        return (pin.length() == 4 && isInt(pin));
     }
 
     public static boolean isInt(String str) {

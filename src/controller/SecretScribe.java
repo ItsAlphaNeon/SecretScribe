@@ -9,8 +9,7 @@ import javax.swing.*;
 import java.util.concurrent.ExecutionException;
 
 public class SecretScribe {
-    String encryptedData;
-    String decryptedData;
+    Profile profile;
 
     public void run() {
         /*
@@ -52,6 +51,13 @@ public class SecretScribe {
                 e.printStackTrace();
             }
         }
+    }
+    public Message createMessage(String content){
+        if (content.length() > 0 ) {
+            Message msg = new Message(profile.getName(), DateUtils.getTime().toString(), DateUtils.getTime().toString(),content);
+        return msg;
+        }
+        return null;
     }
 }
 

@@ -2,13 +2,11 @@ package model;
 
 public class Profile {
     private String name;
-    private String encryptKey;
-    private String decryptKey;
+    private String pin;
 
-    public Profile(String name, String encryptKey, String decryptKey) {
+
+    public Profile(String name) {
         this.name = name;
-        this.encryptKey = encryptKey;
-        this.decryptKey = decryptKey;
     }
 
     public String getName() {
@@ -19,19 +17,11 @@ public class Profile {
         this.name = name;
     }
 
-    public String getEncryptKey() {
-        return encryptKey;
+    public String getPin() {
+        return pin;
     }
 
-    public void setEncryptKey(String encryptKey) {
-        this.encryptKey = encryptKey;
-    }
-
-    public String getDecryptKey() {
-        return decryptKey;
-    }
-
-    public void setDecryptKey(String decryptKey) {
-        this.decryptKey = decryptKey;
+    public void getPin(String encryptKey) {
+        this.pin = encryptKey;
     }
 }
