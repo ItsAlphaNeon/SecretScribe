@@ -1,6 +1,8 @@
+import controller.SecretScribe;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world?");
-
+        SecretScribe secretScribe = new SecretScribe();
+        secretScribe.run();
     }
 }
