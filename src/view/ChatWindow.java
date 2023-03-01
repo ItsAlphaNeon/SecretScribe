@@ -1,10 +1,15 @@
 package view;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class ChatWindow extends javax.swing.JFrame {
 
     public ChatWindow() {
         initComponents();
     }
+
     private void initComponents() {
 
         jFrame1 = new javax.swing.JFrame();
@@ -83,7 +88,6 @@ public class ChatWindow extends javax.swing.JFrame {
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -186,5 +190,35 @@ public class ChatWindow extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextPane jTextPane1;
+
+    public String password;
     // End of variables declaration
+
+    // get the password field and set it to a public string
+    public String getPinField() {
+        char[] passwordChars = jPasswordField1.getPassword();
+        password = new String(passwordChars);
+        return password;
+    }
+
+    public void CodeOnClick() {
+        // check if the pin is valid when the button is clicked
+        jButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // if the pin is invalid, display an error message popup
+                if (!controller.UserInput.isValidPin(getPinField())) {
+                    JOptionPane.showMessageDialog(null, "Invalid Pin", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    // if the pin is valid, display a success message popup
+                    JOptionPane.showMessageDialog(null, "Pin Accepted", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    /*
+                    // set the pin to the user's pin
+                    controller.SecretScribe.setPin(getPinField());
+                    */
+                }
+
+            }
+        });
+    }
 }

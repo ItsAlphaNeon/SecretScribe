@@ -16,9 +16,10 @@ public class Crypt {
     private final int DATA_LENGTH = 128;
     private Cipher encryptionCipher;
 
-    public void init() throws Exception {
-        key = generateAesKeyFromPin(UserInput.getPin("Enter 4 digit pin: "));
-    }
+    /*
+    public void setKey() throws Exception {
+        key = generateAesKeyFromPin(SecretScribe.getPin());
+    }*/
 
     public String encrypt(String data) throws Exception {
         byte[] dataInBytes = data.getBytes();
