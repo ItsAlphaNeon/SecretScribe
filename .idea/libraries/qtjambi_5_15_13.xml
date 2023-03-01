@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="qtjambi-5.15.13">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/qt/qtjambi-5.15.13.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

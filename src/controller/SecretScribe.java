@@ -1,12 +1,14 @@
 package controller;
 
+import view.ChatWindow;
 import view.UserInput;
 
 public class SecretScribe {
     String encryptedData;
     String decryptedData;
 
-    public void run(){
+    public void run() {
+        /*
         try {
             Crypt crypt = new Crypt();
             crypt.init();
@@ -19,7 +21,19 @@ public class SecretScribe {
             System.out.println(encryptedData);
         }
 
+        */
 
+        ChatWindow chatWindow = new ChatWindow();
+        chatWindow.setVisible(true);
+
+        //keep the application running
+        while(true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 
