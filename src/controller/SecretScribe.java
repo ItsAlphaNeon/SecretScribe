@@ -108,17 +108,17 @@ public class SecretScribe {
                 if (chatWindow.getCheckPinButtonClicked()) {
                     // check if the pin is valid
                     if (controller.UserInput.isValidPin(chatWindow.getPinField())) {
-                        // pin is valid, disable the pin field
-                        chatWindow.setPasswordFieldEditable(chatWindow.getPinFieldReference(), false);
                         // allow the user to send messages
                         chatWindow.setButtonClickable(chatWindow.getSendButton(), true);
-                        //disable the pin button
-                        chatWindow.setButtonClickable(chatWindow.getPinButton(), false);
+                        // create a toast to notify the user that the pin is valid
+                        chatWindow.createToast("Pin is valid", "Success");
+
                     } else {
                         // pin is invalid, enable the pin field
                         chatWindow.setPasswordFieldEditable(chatWindow.getPinFieldReference(), true);
                         // disable the send button
                         chatWindow.setButtonClickable(chatWindow.getSendButton(), false);
+                        chatWindow.createToast("Pin is invalid", "Error");
                     }
                 }
                 // if there is a valid pin, allow the user to send messages
@@ -132,6 +132,8 @@ public class SecretScribe {
                         // clear the message field
                         chatWindow.clearMessageField();
                     }
+                } else {
+                    chatWindow.setButtonClickable(chatWindow.getSendButton(), false);
                 }
             }
         });
