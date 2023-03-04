@@ -14,6 +14,13 @@ public class DateUtils {
         return date;
     }
 
+    // get current date
+    public static LocalDate getDate() {
+        LocalDate date = LocalDate.now();
+        return date;
+    }
+
+    // get string from date
     public static String getString(LocalDate date) {
         return formatter.format(date);
     }

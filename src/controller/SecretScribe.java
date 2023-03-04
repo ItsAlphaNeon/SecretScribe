@@ -6,11 +6,14 @@ import view.ChatWindow;
 import view.popups.GetUsernamePopUp;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class SecretScribe {
     Profile profile;
     ChatWindow chatWindow;
+    ArrayList<Message> messages = new ArrayList<>();
+
 
     public void run() {
         /*
