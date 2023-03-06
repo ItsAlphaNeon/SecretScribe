@@ -2,16 +2,16 @@ package controller;
 
 import model.Message;
 import model.Profile;
-import view.ChatWindow;
-import view.popups.GetUsernamePopUp;
+import view.SecretScribeFrame;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
+
 
 public class SecretScribe {
     Profile profile;
-    ChatWindow chatWindow;
+    SecretScribeFrame secretScribeFrame;
     ArrayList<Message> messages = new ArrayList<>();
 
 
@@ -32,13 +32,14 @@ public class SecretScribe {
         */
 
         usernamePopUp();
-        chatWindowCreate();
+        setSecretScribeWindowCreate();
+        // setup the timers
         setupTimers();
 
-        //MAKE SURETO UPDATE ONLY WHEN THERES A NEW MESSAGE
+        //MAKE SURE TO UPDATE ONLY WHEN THERE'S A NEW MESSAGE
 
         // Set the window title to the user's name
-        setWindowTitle(chatWindow, profile.getName());
+        setWindowTitle(secretScribeFrame, profile.getName());
 
         //keep the application running while the window is open
         while (true) {
@@ -50,10 +51,10 @@ public class SecretScribe {
         }
     }
 
-    private void setWindowTitle(ChatWindow chatWindow, String name) {
+    private void setWindowTitle(SecretScribeFrame secretScribeWindow, String name) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                chatWindow.setTitle("Secret Scribe - " + name);
+                secretScribeWindow.setTitle("Secret Scribe - " + name);
             }
         });
     }
@@ -75,8 +76,8 @@ public class SecretScribe {
             if (content.length() > 0) {
                 msg = new Message(profile.getName(), DateUtils.getDate().toString(), DateUtils.getTime().toString(), content);
             }
-            if(msg != null){
-               return msg;
+            if (msg != null) {
+                return msg;
             }
         }
         System.out.println("The profile is null"); // DEBUG
@@ -88,44 +89,44 @@ public class SecretScribe {
             @Override
             public void run() {
                 // wait for the user to click the check pin button
-                if (chatWindow.getCheckPinButtonClicked()) {
+                if (secretScribeFrame.getCheckPinButtonClicked()) {
                     // check if the pin is valid
-                    if (controller.UserInput.isValidPin(chatWindow.getPinField())) {
+                    if (controller.UserInput.isValidPin(secretScribeFrame.getPinField())) {
                         // allow the user to send messages
-                        chatWindow.setButtonClickable(chatWindow.getSendButton(), true);
+                        secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), true);
                         // create a toast to notify the user that the pin is valid
-                        chatWindow.createToast("Pin is valid", "Success");
+                        secretScribeFrame.createToast("Pin is valid", "Success");
 
                     } else {
                         // pin is invalid, enable the pin field
-                        chatWindow.setPasswordFieldEditable(chatWindow.getPinFieldReference(), true);
+                        secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
                         // disable the send button
-                        chatWindow.setButtonClickable(chatWindow.getSendButton(), false);
-                        chatWindow.createToast("Pin is invalid", "Error");
+                        secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
+                        secretScribeFrame.createToast("Pin is invalid", "Error");
                     }
                 }
                 // if there is a valid pin, allow the user to send messages
-                if (controller.UserInput.isValidPin(chatWindow.getPinField())) {
+                if (controller.UserInput.isValidPin(secretScribeFrame.getPinField())) {
                     // if the user clicked the send button
-                    if (chatWindow.ifSendButtonClicked()) {
+                    if (secretScribeFrame.ifSendButtonClicked()) {
                         // create a new message
-                        Message msg = createMessage(chatWindow.getMessageField());
+                        Message msg = createMessage(secretScribeFrame.getMessageField());
                         // TODO: encrypt the message, prepare to send it to the server
 
                         // clear the message field
-                        chatWindow.clearMessageField();
+                        secretScribeFrame.clearMessageField();
                     }
                 } else {
-                    chatWindow.setButtonClickable(chatWindow.getSendButton(), false);
+                    secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
                 }
             }
         });
         // check if the user clicked the send button
-        if (chatWindow.ifSendButtonClicked()) {
+        if (secretScribeFrame.ifSendButtonClicked()) {
             // create a new message
-            sendTestMessage(chatWindow.getMessageField());
+            sendTestMessage(secretScribeFrame.getMessageField());
             // clear the message field
-            chatWindow.clearMessageField();
+            secretScribeFrame.clearMessageField();
         }
     }
 
@@ -161,14 +162,38 @@ public class SecretScribe {
         }
     }
 
-    private void chatWindowCreate() {
-        // Create a new chat window
-        chatWindow = new ChatWindow();
-        // Show the main chat window in a new thread
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                chatWindow.setVisible(true);
+    private void setSecretScribeWindowCreate() {
+        // create a new SecretScribeFrame
+        secretScribeFrame = new SecretScribeFrame();
+        // set the window to visible
+        secretScribeFrame.setVisible(true);
+
+        // disable the send button
+        secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
+        // disable the pin field
+        secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), false);
+
+
+        // add a listener to the send button
+        secretScribeFrame.getSendButton().addActionListener(e -> {
+            // create a new message
+            Message msg = createMessage(secretScribeFrame.getMessageField());
+        });
+
+        // add a listener to the check pin button
+        secretScribeFrame.getCheckPinButton().addActionListener(e -> {
+            // check if the pin is valid
+            if (controller.UserInput.isValidPin(secretScribeFrame.getPinField())) {
+                // allow the user to send messages
+                secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), true);
+                // create a toast to notify the user that the pin is valid
+                secretScribeFrame.createToast("Pin is valid", "Success");
+            } else {
+                // pin is invalid, enable the pin field
+                secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
+                // disable the send button
+                secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
+                secretScribeFrame.createToast("Pin is invalid", "Error");
             }
         });
     }
@@ -182,9 +207,9 @@ public class SecretScribe {
     // debug only, local messages in the array
     public void displayMessages() {
         // clear the chat window
-        chatWindow.clearChatWindow();
+        secretScribeFrame.clearChatWindow();
         for (Message msg : messages) {
-            chatWindow.addMessage(msg);
+            secretScribeFrame.addMessage(msg);
         }
     }
 }
