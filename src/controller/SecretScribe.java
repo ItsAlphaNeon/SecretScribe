@@ -163,8 +163,8 @@ public class SecretScribe {
     }
 
     public Message createMessage(String content) {
-        if (!(profile == null)) {
-            System.out.println("The profile is not null"); // DEBUG
+        if (profile != null) {
+            System.out.println("The profile is not null"); // DEBUG TODO: Get rid of this line.
             Message msg = null;
             if (content.length() > 0) {
                 msg = new Message(profile.getName(), DateUtils.getDate().toString(), DateUtils.getTime().toString(), content);
@@ -173,7 +173,7 @@ public class SecretScribe {
                 return msg;
             }
         }
-        System.out.println("The profile is null"); // DEBUG
+        System.out.println("The profile is null"); // DEBUG TODO: Get rid of this line.
         return null;
     }
 
@@ -283,15 +283,17 @@ public class SecretScribe {
     }
 
     public void sendTestMessage(String content) { // Debug method TODO: Delete this
+        // make suretheres content
         if (content != null && content.length() > 0) {
             try {
+                // encrypt the msg
                 content = crypt.encrypt(content);
             } catch (Exception ex) {
             }
             Message msg = createMessage(content);
             messages.add(msg);
         }
-    }
+    } // TODO delete
 
     // display the messages in the chat window
     // debug only, local messages in the array
@@ -338,6 +340,7 @@ public class SecretScribe {
             try {
                 msg.setContent(crypt.encrypt(msg.getContent()));
                 // TODO: SEND THE MESSAGE TO THE SERVER
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
