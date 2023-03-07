@@ -29,15 +29,9 @@ public class SecretScribeFrame extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         initComponents();
-
         this.chatFrame.setSize(width, height);
         this.chatFrame.setVisible(true);
-
-
-        // create and show your Swing GUI here
-
 
     }
 
@@ -259,7 +253,6 @@ public class SecretScribeFrame extends javax.swing.JFrame {
 
     public void addMessage(Message msg) {
         if (msg == null) {
-            System.out.println("Message is null. but who gives a fuck"); // TODO: remove this
             return;
         }
         // add the message to the message display

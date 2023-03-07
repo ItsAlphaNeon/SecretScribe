@@ -1,16 +1,11 @@
 package controller;
-
-import com.formdev.flatlaf.intellijthemes.FlatDarkFlatIJTheme;
-import view.popups.Connecting;
-import view.popups.ServerConnectionFrame;
-
 import javax.swing.*;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.Date;
+import java.net.URI;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
 public class Server {
     private String name;
@@ -31,15 +26,13 @@ public class Server {
         if (serverIP.contains(":")) {
             this.port = Integer.parseInt(serverIP.substring(serverIP.indexOf(":") + 1));
             this.ip = serverIP.substring(0, serverIP.indexOf(":"));
-            this.username = username;
             // Start the server with the specified port
-            RunServer(this.ip, this.port, this.username);
         } else {
             this.port = 6969; // default port for this application
-            this.username = username;
             // Start the server
-            RunServer(this.ip, this.port, this.username);
         }
+        this.username = username;
+        RunServer(this.ip, this.port, this.username);
     }
 
     public String getName() {
@@ -58,56 +51,74 @@ public class Server {
         return name;
     }
 
+
+
     public void RunServer(String ip, int port, String username) {
         // Create a new thread to run the server
         Thread serverThread = new Thread(() -> {
             try {
-                // Create a new socket
-                Socket socket = new Socket(ip, port);
-                System.out.println("Connected to server: " + ip + ":" + port); // DEBUG
-                // Create input and output streams
-                DataInputStream in = new DataInputStream(socket.getInputStream());
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                System.out.println("Created input and output streams"); // DEBUG
+                // Create a WebSocketClient instance
+                WebSocketClient client = new WebSocketClient(new URI("ws://" + ip + ":" + port)) {
+                    @Override
+                    public void onOpen(ServerHandshake handshake) {
+                        System.out.println("Connected to server: " + ip + ":" + port); // DEBUG
+                        // Send an authentication request to the server
+                        send("AUTHENTICATE:" + username);
+                        System.out.println("Sent authentication request to server"); // DEBUG
+                    }
 
-                // Send an authentication request to the server
-                out.writeUTF("AUTHENTICATE");
-                out.writeUTF(username);
-                System.out.println("Sent authentication request to server"); // DEBUG
+                    @Override
+                    public void onMessage(String message) {
+                        System.out.println("Received response from server"); // DEBUG
+                        // Print the response from the server
+                        System.out.println("Server response: " + message); // DEBUG
+                        if (message.equals("AUTHENTICATED")) {
+                            System.out.println("Server authenticated"); // DEBUG
+                            isConnected = true;
+                        } else {
+                            System.out.println("Server not authenticated"); // DEBUG
+                            isConnected = false;
+                        }
 
-                // Receive the response from the server
-                String response = in.readUTF();
-                System.out.println("Received response from server"); // DEBUG
-                // Print the response from the server
-                System.out.println("Server response: " + response); // DEBUG
-                if (response.equals("AUTHENTICATED")) {
-                    System.out.println("Server authenticated"); // DEBUG
-                    isConnected = true;
-                } else {
-                    System.out.println("Server not authenticated"); // DEBUG
-                    isConnected = false;
-                }
-                // Close the socket
-                socket.close();
-                System.out.println("Closed socket"); // DEBUG
-            } catch (IOException e) {
+                    }
+                    @Override
+                    public void onClose(int code, String reason, boolean remote) {
+                        System.out.println("WebSocket connection closed"); // DEBUG
+                    }
+
+                    @Override
+                    public void onError(Exception ex) {
+                        System.out.println("Error connecting to server: " + ip + ":" + port); // DEBUG
+                        System.out.println(ex.getMessage());
+                        int response = JOptionPane.showConfirmDialog(null, "Could not connect to server, try again?", "Connection Error", JOptionPane.YES_NO_OPTION);
+                        if (response == JOptionPane.YES_OPTION) {
+                            // Try to connect again
+                            RunServer(ip, port, username);
+                        } else {
+                            // Exit the application
+                            System.exit(0);
+                        }
+                    }
+                };
+                // Connect to the server
+                client.connect();
+            } catch (Exception e) {
                 System.out.println("Error connecting to server: " + ip + ":" + port); // DEBUG
                 System.out.println(e.getMessage());
-            }
-            int response = JOptionPane.showConfirmDialog(null, "Could not connect to server, try again?", "Connection Error", JOptionPane.YES_NO_OPTION);
-            if (response == JOptionPane.YES_OPTION) {
-                // Try to connect again
-                RunServer(ip, port, username);
-            } else {
-                // Exit the application
-                System.exit(0);
+                int response = JOptionPane.showConfirmDialog(null, "Could not connect to server, try again?", "Connection Error", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    // Try to connect again
+                    RunServer(ip, port, username);
+                } else {
+                    // Exit the application
+                    System.exit(0);
+                }
             }
         });
         // Start the thread
         serverThread.start();
-        // Wait until isConnected is true
-
     }
+
 
     public boolean isConnected() {
         return isConnected;
@@ -123,19 +134,76 @@ public class Server {
             // Create the message packet
             String message = String.format("message:%s:%s:%s:%s", username, date, time, content);
 
-            // Connect to the server
-            Socket socket = new Socket("localhost", 6969);
+            // Connect to the server using WebSocket client
+            WebSocketClient client = new WebSocketClient(URI.create("ws://" + ip + ":" + port)) {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    // WebSocket connection is opened
+                    System.out.println("WebSocket connection opened");
+                    // Send the message packet to the server
+                    send(message);
+                    // Close the connection
+                    close();
+                }
 
-            // Send the message packet to the server
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(message);
+                @Override
+                public void onMessage(String s) {
+                    // Do nothing
+                }
 
-            // Close the connection
-            out.close();
-            socket.close();
-        } catch (IOException e) {
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    // Do nothing
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                }
+            };
+            client.connect();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    // let the server know that the user is still alive
+    public void sendHeartbeat(String username) {
+        try {
+            // Create the heartbeat packet
+            String heartbeat = String.format("heartbeat:%s", username);
+
+            // Connect to the server using WebSocket client
+            WebSocketClient client = new WebSocketClient(URI.create("ws://" + ip + ":" + port)) {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    // WebSocket connection is opened
+                    System.out.println("WebSocket connection opened");
+                    // Send the heartbeat packet to the server
+                    send(heartbeat);
+                    // Close the connection
+                    close();
+                }
+
+                @Override
+                public void onMessage(String s) {
+                    // Do nothing
+                }
+
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    // Do nothing
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                }
+            };
+            client.connect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 

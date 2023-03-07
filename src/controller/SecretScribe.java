@@ -208,9 +208,10 @@ public class SecretScribe {
                     if (secretScribeFrame.ifSendButtonClicked()) {
                         // check to see if the message field is empty
                         if (secretScribeFrame.getMessageField().length() > 0) {
-                            // create a new message
-                            Message msg = createMessage(secretScribeFrame.getMessageField());
-                            // TODO: encrypt the message and send to server
+                            // create a new encrypted message
+                            createEncryptedMessage(secretScribeFrame.getMessageField());
+                            // clear the message field
+                            secretScribeFrame.clearMessageField();
                         }
                         // clear the message field
                         secretScribeFrame.clearMessageField();
@@ -229,6 +230,9 @@ public class SecretScribe {
         }
         // Change the serverNameLabel to the server name
         secretScribeFrame.setServerNameLabel(server.getName());
+        // Make sure the password field is editable
+        secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(),true);
+
 
         // Populate the memberlist with the members of the server (if there are any)
         //TODO: Get the members of the server and add them to the memberList
