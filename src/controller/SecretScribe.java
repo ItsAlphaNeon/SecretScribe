@@ -1,5 +1,6 @@
 package controller;
 
+import com.formdev.flatlaf.intellijthemes.FlatDarkFlatIJTheme;
 import model.Message;
 import model.Profile;
 import model.ServerList;
@@ -11,13 +12,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class SecretScribe {
     Profile profile;
     Server server;
-    ServerList serverList;
+    ServerList serverList = new ServerList();
     SecretScribeFrame secretScribeFrame;
+    ServerConnectionFrame serverConnectionFrame;
     ArrayList<Message> messages = new ArrayList<>();
     Crypt crypt = new Crypt();
 
@@ -56,13 +59,9 @@ public class SecretScribe {
         // ask the user if they want to close the program if they close the server connection frame
         serverConnectionFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         // add an action listener to the server connection frame
-
-        // populate the server ip list combo box, making sure its not null
-        if (ServerList.getServerList() != null) {
-            for (String serverIP : ServerList.getServerList()) {
-                serverConnectionFrame.serverIPListComboBox.addItem(serverIP);
-            }
-        }
+        // pass the serverconnectionframe to the ServerList class to populate the combo box
+        serverList.setServerConnectionFrame(Objects.requireNonNull(serverConnectionFrame));
+        populateServerList(serverConnectionFrame);
 
         serverConnectionFrame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -85,7 +84,7 @@ public class SecretScribe {
             public void actionPerformed(ActionEvent e) {
                 // get the server ip from the server connection frame
                 String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
-               // make sure the IP is not null
+                // make sure the IP is not null
                 if (serverIP != null) {
                     // create a new server
                     server = new Server(serverIP);
@@ -107,8 +106,8 @@ public class SecretScribe {
                 String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
                 // make sure the IP is not null
                 if (serverIP != null) {
-                   // save the IP to the server list file
-                    ServerList.saveServer(serverIP);
+                    // save the IP to the server list file
+                    serverList.saveServer(serverIP);
                     // inform the user that the IP was saved
                     JOptionPane.showMessageDialog(serverConnectionFrame, "Server IP saved");
 
@@ -127,9 +126,8 @@ public class SecretScribe {
                 // make sure the IP is not null
                 if (serverIP != null) {
                     // delete the IP from the server list file
-                    ServerList.deleteServer(serverIP);
-                    // close the server connection frame
-                    serverConnectionFrame.dispose();
+                    serverList.deleteServer(serverIP);
+                    // inform the user
                 } else {
                     // if the IP is null, display an error message
                     JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
@@ -144,6 +142,7 @@ public class SecretScribe {
             }
         }
     }
+
 
     private void setWindowTitle(SecretScribeFrame secretScribeWindow, String name) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -226,11 +225,19 @@ public class SecretScribe {
             secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
             // disable the send button
             secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
+            // create a toast to notify the user that the pin is invalid
             secretScribeFrame.createToast("Pin is invalid", "Error");
         }
     }
 
     private void usernamePopUp() {
+        // theme the pop-up
+        try {
+            // dark mode for swing
+            UIManager.setLookAndFeel(new FlatDarkFlatIJTheme());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // pop up to prompt user to enter their name (Creates profile)
         //create a thread to run the pop-up
         boolean validUsername = false;
@@ -338,5 +345,16 @@ public class SecretScribe {
         // clear the message field
         secretScribeFrame.clearMessageField();
     }
+
+    public void populateServerList(ServerConnectionFrame serverConnectionFrame) {
+        // populate the server ip list combo box, making sure its not null
+        ServerList.getServerList();
+        //clear the combo box
+        serverConnectionFrame.serverIPListComboBox.removeAllItems();
+        for (String serverIP : ServerList.getServerList()) {
+            serverConnectionFrame.serverIPListComboBox.addItem(serverIP);
+        }
+    }
 }
+
 

@@ -11,8 +11,8 @@ import net.miginfocom.swing.*;
 /**
  * @author Neon
  */
-public class ServerConnectFrame extends JFrame {
-    public ServerConnectFrame() {
+public class idkWhatTheFUckthisISdEletelater extends JFrame {
+    public idkWhatTheFUckthisISdEletelater() {
         initComponents();
     }
 

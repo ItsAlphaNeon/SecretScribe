@@ -1,19 +1,23 @@
 package model;
 
 import controller.FileIO;
+import controller.SecretScribe;
 import controller.Server;
+import view.popups.ServerConnectionFrame;
 
 import java.io.File;
 import java.util.Collection;
 
+
 public class ServerList {
     private Server[] servers;
+    public ServerConnectionFrame serverConnectionFrame;
 
     public ServerList() {
         servers = new Server[0];
     }
 
-    public static void saveServer(String serverIP) {
+    public void saveServer(String serverIP) {
         // check to see if the file exists
         File file = new File("servers.txt");
         if (!file.exists()) {
@@ -24,7 +28,7 @@ public class ServerList {
             }
         }
         // check if server is already saved
-        String[] savedServers = FileIO.readFromFile("servers.txt").split(" ");
+        String[] savedServers = FileIO.readFromFile("servers.txt").split("\r\n");
         for (String savedServer : savedServers) {
             if (savedServer.equals(serverIP)) {
                 System.out.println("Server already saved"); // DEBUG
@@ -33,11 +37,13 @@ public class ServerList {
         }
         // if not saved, save it
         // save the server to a file "servers.txt" in a way that can be read by the loadServer method
-        FileIO.writeToFile("servers.txt", FileIO.readFromFile("servers.txt") + " " + serverIP + " ");
+        FileIO.writeToFile("servers.txt", (FileIO.readFromFile("servers.txt") + serverIP + "\n\r").trim());
         System.out.println("Server saved"); // DEBUG
+        // refresh the server list
+        populateServerList();
     }
 
-    public static void deleteServer(String serverIP) {
+    public void deleteServer(String serverIP) {
         // check to see if the file exists
         File file = new File("servers.txt");
         if (!file.exists()) {
@@ -48,36 +54,38 @@ public class ServerList {
             }
         }
         // check if server is already saved
-        String[] savedServers = FileIO.readFromFile("servers.txt").split(" ");
+        String[] savedServers = FileIO.readFromFile("servers.txt").split("\r\n");
         for (String savedServer : savedServers) {
-            if (savedServer.equals(serverIP)) {
+            savedServer = savedServer.trim();
+            System.out.println("Saved server: " + savedServer); // DEBUG
+            if (savedServer.contains(serverIP)) {
                 // if saved, delete it
-                // save the server to a file "servers.txt" in a way that can be read by the loadServer method
-                FileIO.writeToFile("servers.txt", FileIO.readFromFile("servers.txt").replace(serverIP + " ", ""));
+                // save the server to a file "servers.txt" in a way that can be read by the getServerList method
+                String updatedServers = FileIO.readFromFile("servers.txt").replace(serverIP, "");
+                System.out.println("Updated servers: " + updatedServers); // DEBUG
+                FileIO.writeToFile("servers.txt", updatedServers);
                 System.out.println("Server deleted"); // DEBUG
+                // refresh the server list
+                populateServerList();
                 return;
             }
         }
-        System.out.println("Server not saved"); // DEBUG
+        // if the server was not found, print a message
+        System.out.println("Server Not Deleted - Error"); // DEBUG
     }
+
 
     public void addServer(Server server) {
         Server[] temp = new Server[servers.length + 1];
-        for (int i = 0; i < servers.length; i++) {
-            temp[i] = servers[i];
-        }
+        System.arraycopy(servers, 0, temp, 0, servers.length);
         temp[servers.length] = server;
         servers = temp;
     }
 
     public void removeServer(int index) {
         Server[] temp = new Server[servers.length - 1];
-        for (int i = 0; i < index; i++) {
-            temp[i] = servers[i];
-        }
-        for (int i = index; i < temp.length; i++) {
-            temp[i] = servers[i + 1];
-        }
+        if (index >= 0) System.arraycopy(servers, 0, temp, 0, index);
+        if (temp.length - index >= 0) System.arraycopy(servers, index + 1, temp, index, temp.length - index);
         servers = temp;
     }
 
@@ -115,6 +123,20 @@ public class ServerList {
 
     public static String[] getServerList() {
         // read from file "servers.txt" and return the list of servers as a String[]
-        return FileIO.readFromFile("servers.txt").split(" ");
+        return FileIO.readFromFile("servers.txt").split("/");
+    }
+
+    public void setServerConnectionFrame(ServerConnectionFrame serverConnectionFrame) {
+        this.serverConnectionFrame = serverConnectionFrame;
+    }
+
+    public void populateServerList() {
+        // populate the server ip list combo box, making sure its not null
+        ServerList.getServerList();
+        // clear and repopulate the server list
+        serverConnectionFrame.serverIPListComboBox.removeAllItems();
+        for (String serverIP : ServerList.getServerList()) {
+            serverConnectionFrame.serverIPListComboBox.addItem(serverIP);
+        }
     }
 }
