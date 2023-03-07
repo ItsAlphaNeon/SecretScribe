@@ -10,7 +10,7 @@ new FormModel {
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 					"$horizontalGroup": "par l {seq l {par t:::p {seq t {space :p:17:p, comp serverIPLabel:::p:85:p, space :::p, comp serverIPListComboBox:::p:178:p}, seq l {space :p:59:p, comp saveButton:::p::p, space :p:42:p, comp deleteButton:::p::p}}, space :::p}}"
-					"$verticalGroup": "par l {seq l {space :::p, par b {comp serverIPLabel::b:p:22:p, comp serverIPListComboBox::b:p::p}, space s:::p, par b {comp saveButton::b:p::p, comp deleteButton::b:p::p}, space ::25:x}}"
+					"$verticalGroup": "par l {seq l {space :::p, par b {comp serverIPLabel::b:p:22:p, comp serverIPListComboBox::b:p::p}, space s:::p, par b {comp saveButton::b:p::p, comp deleteButton::b:p::p}, space ::4:x}}"
 				} ) {
 					name: "contentPanel"
 					add( new FormComponent( "javax.swing.JLabel" ) {

@@ -70,7 +70,7 @@ public class SecretScribeFrame extends javax.swing.JFrame {
             {
 
                 //---- memberList ----
-                memberList.setText("- Member 1");
+                memberList.setEditable(false);
                 scrollPane1.setViewportView(memberList);
             }
 
@@ -82,6 +82,9 @@ public class SecretScribeFrame extends javax.swing.JFrame {
 
             //======== scrollPane2 ========
             {
+
+                //---- messageDisplay ----
+                messageDisplay.setEditable(false);
                 scrollPane2.setViewportView(messageDisplay);
             }
 
@@ -112,13 +115,13 @@ public class SecretScribeFrame extends javax.swing.JFrame {
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(chatFrameContentPaneLayout.createParallelGroup()
                             .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(messageBar, GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+                                .addComponent(messageBar, GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))
                             .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(serverNameLabel, GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
+                                .addComponent(serverNameLabel, GroupLayout.DEFAULT_SIZE, 647, Short.MAX_VALUE)
                                 .addGap(41, 41, 41))
                             .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+                                .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)))
                         .addComponent(sendButton)
                         .addGap(9, 9, 9))
@@ -280,5 +283,9 @@ public class SecretScribeFrame extends javax.swing.JFrame {
 
     public JTextField getMessageFieldReference() {
         return messageBar;
+    }
+
+    public void setServerNameLabel(String title) {
+        chatFrame.setTitle(title);
     }
 }

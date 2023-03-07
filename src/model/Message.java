@@ -1,5 +1,10 @@
 package model;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Date;
+
 public class Message {
     private String sendersName;
     private String dateSent;
@@ -8,8 +13,6 @@ public class Message {
 
     public Message(String sendersName, String dateSent, String timeSent, String content) {
         this.sendersName = sendersName;
-        this.dateSent = dateSent;
-        this.timeSent = timeSent;
         this.content = content;
     }
 
@@ -62,6 +65,7 @@ public class Message {
         }
         return sb.toString();
     }
+
 
 
 

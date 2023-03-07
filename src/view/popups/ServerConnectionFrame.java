@@ -89,7 +89,7 @@ public class ServerConnectionFrame extends JFrame {
                             .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(saveButton)
                                 .addComponent(deleteButton))
-                            .addContainerGap(25, Short.MAX_VALUE))
+                            .addContainerGap(4, Short.MAX_VALUE))
                 );
             }
             dialogPane.add(contentPanel, BorderLayout.CENTER);

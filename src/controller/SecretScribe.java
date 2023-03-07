@@ -30,6 +30,8 @@ public class SecretScribe {
         usernamePopUp();
         // prompt the user for the server ip
         serverPopUp();
+        // Wait for the user to connect to the server
+        waitForConnection();
         // create the main window
         setSecretScribeWindowCreate();
         // setup the timers
@@ -39,6 +41,16 @@ public class SecretScribe {
 
         //keep the application running while the window is open
         keepRunning();
+    }
+
+    private void waitForConnection() {
+        while (server == null) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void keepRunning() {
@@ -52,104 +64,108 @@ public class SecretScribe {
     }
 
     private void serverPopUp() {
-        // create a new server connection frame
-        ServerConnectionFrame serverConnectionFrame = new ServerConnectionFrame();
-        // set the server connection frame to visible
-        serverConnectionFrame.setVisible(true);
-        // ask the user if they want to close the program if they close the server connection frame
-        serverConnectionFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        // add an action listener to the server connection frame
-        // pass the serverconnectionframe to the ServerList class to populate the combo box
-        serverList.setServerConnectionFrame(Objects.requireNonNull(serverConnectionFrame));
-        populateServerList(serverConnectionFrame);
-
-        serverConnectionFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+        // create a SwingWorker to run the server connection frame
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                // ask the user if they want to close the program
-                int result = JOptionPane.showConfirmDialog(serverConnectionFrame, "Are you sure you want to close the program?", "Exit Program", JOptionPane.YES_NO_OPTION);
-                // if the user clicks yes, close the program
-                if (result == JOptionPane.YES_OPTION) {
-                    System.exit(0);
-                }
-            }
-        });
-        // make the server connection frame not resizable
-        serverConnectionFrame.setResizable(false);
-        //make sure the combo box is editable
-        serverConnectionFrame.serverIPListComboBox.setEditable(true);
-        // add an action listener to the ok button
-        serverConnectionFrame.okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // get the server ip from the server connection frame
-                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
-                // make sure the IP is not null
-                if (serverIP != null) {
-                    // create a new server
-                    server = new Server(serverIP);
-                    // set the title of the window to the server name
-                    setWindowTitle(secretScribeFrame, server.getName());
-                    // close the server connection frame
-                    serverConnectionFrame.dispose();
-                } else {
-                    // if the IP is null, display an error message
-                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
-                }
-            }
-        });
-        // add an action listener to the save button
-        serverConnectionFrame.saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // get the server ip from the server connection frame
-                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
-                // make sure the IP is not null
-                if (serverIP != null) {
-                    // save the IP to the server list file
-                    serverList.saveServer(serverIP);
-                    // inform the user that the IP was saved
-                    JOptionPane.showMessageDialog(serverConnectionFrame, "Server IP saved");
+            protected Void doInBackground() throws Exception {
+                // create a new server connection frame
+                Thread serverConnectionFrameThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // create a new server connection frame
+                        ServerConnectionFrame serverConnectionFrame = new ServerConnectionFrame();
+                        // set the server connection frame to visible
+                        serverConnectionFrame.setVisible(true);
+                        // ask the user if they want to close the program if they close the server connection frame
+                        serverConnectionFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                        // pass the serverconnectionframe to the ServerList class to populate the combo box
+                        serverList.setServerConnectionFrame(Objects.requireNonNull(serverConnectionFrame));
+                        populateServerList(serverConnectionFrame);
 
-                } else {
-                    // if the IP is null, display an error message
-                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
-                }
-            }
-        });
-        // add an action listener to the Delete button
-        serverConnectionFrame.deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // get the server ip from the server connection frame
-                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
-                // make sure the IP is not null
-                if (serverIP != null) {
-                    // delete the IP from the server list file
-                    serverList.deleteServer(serverIP);
-                    // inform the user
-                } else {
-                    // if the IP is null, display an error message
-                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
-                }
-            }
-        });
-        while (server == null) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+                        serverConnectionFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                            @Override
+                            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                                // ask the user if they want to close the program
+                                int result = JOptionPane.showConfirmDialog(serverConnectionFrame, "Are you sure you want to close the program?", "Exit Program", JOptionPane.YES_NO_OPTION);
+                                // if the user clicks yes, close the program
+                                if (result == JOptionPane.YES_OPTION) {
+                                    System.exit(0);
+                                }
+                            }
+                        });
+                        // make the server connection frame not resizable
+                        serverConnectionFrame.setResizable(false);
+                        //make sure the combo box is editable
+                        serverConnectionFrame.serverIPListComboBox.setEditable(true);
+                        // add an action listener to the ok button
+                        serverConnectionFrame.okButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                // get the server ip from the server connection frame
+                                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
+                                // make sure the IP is not null
+                                if (serverIP != null) {
+                                    // create a new server
+                                    server = new Server(serverIP, profile.getName());
+                                    // close the server connection frame
+                                    serverConnectionFrame.dispose();
+                                } else {
+                                    // if the IP is null, display an error message
+                                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
+                                }
+                            }
+                        });
+                        // add an action listener to the save button
+                        serverConnectionFrame.saveButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                // get the server ip from the server connection frame
+                                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
+                                // make sure the IP is not null
+                                if (serverIP != null) {
+                                    // save the IP to the server list file
+                                    serverList.saveServer(serverIP);
+                                    // inform the user that the IP was saved
+                                    JOptionPane.showMessageDialog(serverConnectionFrame, "Server IP saved");
 
-
-    private void setWindowTitle(SecretScribeFrame secretScribeWindow, String name) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                secretScribeWindow.setTitle("Secret Scribe - " + name);
+                                } else {
+                                    // if the IP is null, display an error message
+                                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
+                                }
+                            }
+                        });
+                        // add an action listener to the Delete button
+                        serverConnectionFrame.deleteButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                // get the server ip from the server connection frame
+                                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
+                                // make sure the IP is not null
+                                if (serverIP != null) {
+                                    // delete the IP from the server list file
+                                    serverList.deleteServer(serverIP);
+                                    // inform the user
+                                } else {
+                                    // if the IP is null, display an error message
+                                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
+                                }
+                            }
+                        });
+                        while (server == null) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                serverConnectionFrameThread.start();
+                return null;
             }
-        });
+        };
+        // execute the SwingWorker
+        worker.execute();
     }
 
     private void setupTimers() {
@@ -206,10 +222,29 @@ public class SecretScribe {
         });
         // check if the user clicked the send button
         if (secretScribeFrame.ifSendButtonClicked()) {
-            // create a new message
-            sendTestMessage(secretScribeFrame.getMessageField());
+            //create a new message
+            createEncryptedMessage(secretScribeFrame.getMessageField());
             // clear the message field
             secretScribeFrame.clearMessageField();
+        }
+        // Change the serverNameLabel to the server name
+        secretScribeFrame.setServerNameLabel(server.getName());
+
+        // Populate the memberlist with the members of the server (if there are any)
+        //TODO: Get the members of the server and add them to the memberList
+
+
+    }
+
+    private void createEncryptedMessage(String content) {
+        if (content != null && content.length() > 0) {
+            try {
+                // encrypt the msg
+                content = crypt.encrypt(content);
+            } catch (Exception ex) {
+            }
+            // send the message to the server
+            server.sendMessage(profile.getName(),content);
         }
     }
 
@@ -221,8 +256,6 @@ public class SecretScribe {
             secretScribeFrame.createToast("Pin is valid", "Success");
 
         } else {
-            // pin is invalid, enable the pin field
-            secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
             // disable the send button
             secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
             // create a toast to notify the user that the pin is invalid
