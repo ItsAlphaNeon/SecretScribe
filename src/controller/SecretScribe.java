@@ -173,9 +173,9 @@ public class SecretScribe {
         Timer timer = new Timer(100, e -> updateGUI());
         timer.start();
 
-        // create a timer to update the messages every 1 second
-        Timer messageTimer = new Timer(1000, e -> displayMessages());
-        messageTimer.start();
+        // Create a timer to send a heartbeat every 5 seconds
+        Timer heartbeatTimer = new Timer(5000, e -> server.sendHeartbeat(profile.getName()));
+        heartbeatTimer.start();
     }
 
     public Message createMessage(String content) {

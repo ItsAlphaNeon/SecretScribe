@@ -1,11 +1,14 @@
 package controller;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.net.URI;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+
 
 public class Server {
     private String name;
@@ -52,7 +55,6 @@ public class Server {
     }
 
 
-
     public void RunServer(String ip, int port, String username) {
         // Create a new thread to run the server
         Thread serverThread = new Thread(() -> {
@@ -81,6 +83,7 @@ public class Server {
                         }
 
                     }
+
                     @Override
                     public void onClose(int code, String reason, boolean remote) {
                         System.out.println("WebSocket connection closed"); // DEBUG
@@ -124,6 +127,8 @@ public class Server {
         return isConnected;
     }
 
+
+
     public void sendMessage(String username, String content) {
         try {
             // Get the current date and time
@@ -163,47 +168,52 @@ public class Server {
             };
             client.connect();
         } catch (Exception e) {
-            e.printStackTrace();
+            isConnected = false;
         }
     }
+
     // let the server know that the user is still alive
     public void sendHeartbeat(String username) {
-        try {
-            // Create the heartbeat packet
-            String heartbeat = String.format("heartbeat:%s", username);
+        if (isConnected) {
+            try {
+                // Create the heartbeat packet
+                String heartbeat = String.format("heartbeat:%s", username);
 
-            // Connect to the server using WebSocket client
-            WebSocketClient client = new WebSocketClient(URI.create("ws://" + ip + ":" + port)) {
-                @Override
-                public void onOpen(ServerHandshake serverHandshake) {
-                    // WebSocket connection is opened
-                    System.out.println("WebSocket connection opened");
-                    // Send the heartbeat packet to the server
-                    send(heartbeat);
-                    // Close the connection
-                    close();
-                }
+                // Connect to the server using WebSocket client
+                WebSocketClient client = new WebSocketClient(URI.create("ws://" + ip + ":" + port)) {
+                    @Override
+                    public void onOpen(ServerHandshake serverHandshake) {
+                        // WebSocket connection is opened
+                        System.out.println("WebSocket connection opened");
+                        // Send the heartbeat packet to the server
+                        send(heartbeat);
+                        System.out.println("Sent heartbeat to server");
+                        // Close the connection
+                        close();
+                    }
 
-                @Override
-                public void onMessage(String s) {
-                    // Do nothing
-                }
+                    @Override
+                    public void onMessage(String s) {
+                        // Do nothing
+                    }
 
-                @Override
-                public void onClose(int i, String s, boolean b) {
-                    // Do nothing
-                }
+                    @Override
+                    public void onClose(int i, String s, boolean b) {
+                        // Do nothing
+                    }
 
-                @Override
-                public void onError(Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            client.connect();
-        } catch (Exception e) {
-            e.printStackTrace();
+                    @Override
+                    public void onError(Exception e) {
+                        System.out.println("Error sending heartbeat to server, connection lost");
+                        isConnected = false;
+                    }
+                };
+                client.connect();
+            } catch (Exception e) {
+                System.out.println("Error sending heartbeat to server, connection lost");
+                isConnected = false;
+            }
         }
     }
-
 }
 
