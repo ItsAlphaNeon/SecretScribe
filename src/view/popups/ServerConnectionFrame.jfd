@@ -1,0 +1,61 @@
+JFDML JFormDesigner: "8.0.2.0.220" Java: "17.0.5" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {par t:::p {seq t {space :p:17:p, comp serverIPLabel:::p:85:p, space :::p, comp serverIPListComboBox:::p:178:p}, seq l {space :p:59:p, comp saveButton:::p::p, space :p:42:p, comp deleteButton:::p::p}}, space :::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, par b {comp serverIPLabel::b:p:22:p, comp serverIPListComboBox::b:p::p}, space s:::p, par b {comp saveButton::b:p::p, comp deleteButton::b:p::p}, space ::25:x}}"
+				} ) {
+					name: "contentPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "serverIPLabel"
+						"text": "Server IP:"
+						"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 7, false )
+					} )
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "serverIPListComboBox"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "saveButton"
+						"text": "Save"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "deleteButton"
+						"text": "Delete"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+					"$columnSpecs": "0:1.0, 80"
+					"$rowSpecs": "0"
+					"$hGap": 5
+					"$vGap": 5
+				} ) {
+					name: "buttonBar"
+					"border": new javax.swing.border.EmptyBorder( 12, 0, 0, 0 )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "okButton"
+						"text": "OK"
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridx": 1
+						"gridy": 0
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 65, 110 )
+			"size": new java.awt.Dimension( 330, 185 )
+		} )
+	}
+}

@@ -2,47 +2,141 @@ package controller;
 
 import model.Message;
 import model.Profile;
+import model.ServerList;
 import view.SecretScribeFrame;
+import view.popups.ServerConnectionFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 
 public class SecretScribe {
     Profile profile;
+    Server server;
+    ServerList serverList;
     SecretScribeFrame secretScribeFrame;
     ArrayList<Message> messages = new ArrayList<>();
+    Crypt crypt = new Crypt();
 
 
     public void run() {
-        /*
-        try {
-            Crypt crypt = new Crypt();
-            crypt.init();
-            String encryptedData = crypt.encrypt(UserInput.getString("Message: "));
-            String decryptedData = crypt.decrypt(encryptedData);
-            System.out.println("Encrypted Data : " + encryptedData);
-            System.out.println("Decrypted Data : " + decryptedData);
-
-        } catch (Exception ex){
-            System.out.println(encryptedData);
-        }
-
-        */
-
+        // prompt the user for their username
         usernamePopUp();
+        // prompt the user for the server ip
+        serverPopUp();
+        // create the main window
         setSecretScribeWindowCreate();
         // setup the timers
         setupTimers();
 
         //MAKE SURE TO UPDATE ONLY WHEN THERE'S A NEW MESSAGE
 
-        // Set the window title to the user's name
-        setWindowTitle(secretScribeFrame, profile.getName());
-
         //keep the application running while the window is open
+        keepRunning();
+    }
+
+    private void keepRunning() {
         while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void serverPopUp() {
+        // create a new server connection frame
+        ServerConnectionFrame serverConnectionFrame = new ServerConnectionFrame();
+        // set the server connection frame to visible
+        serverConnectionFrame.setVisible(true);
+        // ask the user if they want to close the program if they close the server connection frame
+        serverConnectionFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        // add an action listener to the server connection frame
+
+        // populate the server ip list combo box, making sure its not null
+        if (ServerList.getServerList() != null) {
+            for (String serverIP : ServerList.getServerList()) {
+                serverConnectionFrame.serverIPListComboBox.addItem(serverIP);
+            }
+        }
+
+        serverConnectionFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                // ask the user if they want to close the program
+                int result = JOptionPane.showConfirmDialog(serverConnectionFrame, "Are you sure you want to close the program?", "Exit Program", JOptionPane.YES_NO_OPTION);
+                // if the user clicks yes, close the program
+                if (result == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                }
+            }
+        });
+        // make the server connection frame not resizable
+        serverConnectionFrame.setResizable(false);
+        //make sure the combo box is editable
+        serverConnectionFrame.serverIPListComboBox.setEditable(true);
+        // add an action listener to the ok button
+        serverConnectionFrame.okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // get the server ip from the server connection frame
+                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
+               // make sure the IP is not null
+                if (serverIP != null) {
+                    // create a new server
+                    server = new Server(serverIP);
+                    // set the title of the window to the server name
+                    setWindowTitle(secretScribeFrame, server.getName());
+                    // close the server connection frame
+                    serverConnectionFrame.dispose();
+                } else {
+                    // if the IP is null, display an error message
+                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
+                }
+            }
+        });
+        // add an action listener to the save button
+        serverConnectionFrame.saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // get the server ip from the server connection frame
+                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
+                // make sure the IP is not null
+                if (serverIP != null) {
+                   // save the IP to the server list file
+                    ServerList.saveServer(serverIP);
+                    // inform the user that the IP was saved
+                    JOptionPane.showMessageDialog(serverConnectionFrame, "Server IP saved");
+
+                } else {
+                    // if the IP is null, display an error message
+                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
+                }
+            }
+        });
+        // add an action listener to the Delete button
+        serverConnectionFrame.deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // get the server ip from the server connection frame
+                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
+                // make sure the IP is not null
+                if (serverIP != null) {
+                    // delete the IP from the server list file
+                    ServerList.deleteServer(serverIP);
+                    // close the server connection frame
+                    serverConnectionFrame.dispose();
+                } else {
+                    // if the IP is null, display an error message
+                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
+                }
+            }
+        });
+        while (server == null) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -91,28 +185,18 @@ public class SecretScribe {
                 // wait for the user to click the check pin button
                 if (secretScribeFrame.getCheckPinButtonClicked()) {
                     // check if the pin is valid
-                    if (controller.UserInput.isValidPin(secretScribeFrame.getPinField())) {
-                        // allow the user to send messages
-                        secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), true);
-                        // create a toast to notify the user that the pin is valid
-                        secretScribeFrame.createToast("Pin is valid", "Success");
-
-                    } else {
-                        // pin is invalid, enable the pin field
-                        secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
-                        // disable the send button
-                        secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
-                        secretScribeFrame.createToast("Pin is invalid", "Error");
-                    }
+                    checkIfPinIsValid();
                 }
                 // if there is a valid pin, allow the user to send messages
                 if (controller.UserInput.isValidPin(secretScribeFrame.getPinField())) {
                     // if the user clicked the send button
                     if (secretScribeFrame.ifSendButtonClicked()) {
-                        // create a new message
-                        Message msg = createMessage(secretScribeFrame.getMessageField());
-                        // TODO: encrypt the message, prepare to send it to the server
-
+                        // check to see if the message field is empty
+                        if (secretScribeFrame.getMessageField().length() > 0) {
+                            // create a new message
+                            Message msg = createMessage(secretScribeFrame.getMessageField());
+                            // TODO: encrypt the message and send to server
+                        }
                         // clear the message field
                         secretScribeFrame.clearMessageField();
                     }
@@ -127,6 +211,22 @@ public class SecretScribe {
             sendTestMessage(secretScribeFrame.getMessageField());
             // clear the message field
             secretScribeFrame.clearMessageField();
+        }
+    }
+
+    private void checkIfPinIsValid() {
+        if (UserInput.isValidPin(secretScribeFrame.getPinField())) {
+            // allow the user to send messages
+            secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), true);
+            // create a toast to notify the user that the pin is valid
+            secretScribeFrame.createToast("Pin is valid", "Success");
+
+        } else {
+            // pin is invalid, enable the pin field
+            secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
+            // disable the send button
+            secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
+            secretScribeFrame.createToast("Pin is invalid", "Error");
         }
     }
 
@@ -164,43 +264,26 @@ public class SecretScribe {
 
     private void setSecretScribeWindowCreate() {
         // create a new SecretScribeFrame
-        secretScribeFrame = new SecretScribeFrame();
-        // set the window to visible
-        secretScribeFrame.setVisible(true);
+        secretScribeFrame = new SecretScribeFrame(600, 400);
 
         // disable the send button
         secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
         // disable the pin field
         secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), false);
+        // set the window title
+        secretScribeFrame.setName("SecretScribe - " + profile.getName());
 
-
-        // add a listener to the send button
-        secretScribeFrame.getSendButton().addActionListener(e -> {
-            // create a new message
-            Message msg = createMessage(secretScribeFrame.getMessageField());
-        });
-
-        // add a listener to the check pin button
-        secretScribeFrame.getCheckPinButton().addActionListener(e -> {
-            // check if the pin is valid
-            if (controller.UserInput.isValidPin(secretScribeFrame.getPinField())) {
-                // allow the user to send messages
-                secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), true);
-                // create a toast to notify the user that the pin is valid
-                secretScribeFrame.createToast("Pin is valid", "Success");
-            } else {
-                // pin is invalid, enable the pin field
-                secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
-                // disable the send button
-                secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
-                secretScribeFrame.createToast("Pin is invalid", "Error");
-            }
-        });
     }
 
-    public void sendTestMessage(String content) { // Debug method
-        Message msg = createMessage(content);
-        messages.add(msg);
+    public void sendTestMessage(String content) { // Debug method TODO: Delete this
+        if (content != null && content.length() > 0) {
+            try {
+                content = crypt.encrypt(content);
+            } catch (Exception ex) {
+            }
+            Message msg = createMessage(content);
+            messages.add(msg);
+        }
     }
 
     // display the messages in the chat window
@@ -209,8 +292,51 @@ public class SecretScribe {
         // clear the chat window
         secretScribeFrame.clearChatWindow();
         for (Message msg : messages) {
-            secretScribeFrame.addMessage(msg);
+            try {
+                msg.setContent(crypt.decrypt(msg.getContent()));
+            } catch (Exception ex) {
+                secretScribeFrame.addMessage(msg);
+            }
         }
+    }
+
+    // set up the gui listeners for the main window
+    private void setupListeners() {
+        // add a listener for the send button
+        secretScribeFrame.getSendButton().addActionListener(e -> {
+            sendButtonClicked();
+        });
+        // add a listener for the check pin button
+        secretScribeFrame.getCheckPinButton().addActionListener(e -> {
+            checkPinButtonClicked();
+        });
+        secretScribeFrame.getMessageFieldReference().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // call sendButtonClicked() when the user presses enter
+                sendButtonClicked();
+            }
+        });
+    }
+
+    private void checkPinButtonClicked() {
+        // check if the pin is valid
+        checkIfPinIsValid();
+    }
+
+    private void sendButtonClicked() {
+        // check to see if the message field is empty
+        if (secretScribeFrame.getMessageField().length() > 0) {
+            // create a new message
+            Message msg = createMessage(secretScribeFrame.getMessageField());
+            try {
+                msg.setContent(crypt.encrypt(msg.getContent()));
+                // TODO: SEND THE MESSAGE TO THE SERVER
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        // clear the message field
+        secretScribeFrame.clearMessageField();
     }
 }
 

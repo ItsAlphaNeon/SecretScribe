@@ -17,10 +17,10 @@ public class Crypt {
     private final int DATA_LENGTH = 128;
     private Cipher encryptionCipher;
 
-    /*
-    public void setKey() throws Exception {
-        key = generateAesKeyFromPin(SecretScribe.getPin());
-    }*/
+
+    public void setKey(String pin) throws Exception {
+        key = generateAesKeyFromPin(pin);
+    }
 
     public String encrypt(String data) throws Exception {
         byte[] dataInBytes = data.getBytes();

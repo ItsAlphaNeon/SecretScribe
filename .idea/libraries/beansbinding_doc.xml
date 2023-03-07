@@ -1,0 +1,36 @@
+<component name="libraryTable">
+  <library name="beansbinding-doc">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/beansbinding.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/intellij_forms_rt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jfd-annotations.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jfd-loader.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jgoodies-common.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jgoodies-forms.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/miglayout-core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/miglayout-swing.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/swing-layout.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/TableLayout.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/beansbinding-doc.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jgoodies-common-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jgoodies-forms-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/miglayout-core-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/miglayout-swing-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/swing-layout-javadoc.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/TableLayout-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/intellij_forms_rt_src.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jfd-loader-src.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jgoodies-common-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/jgoodies-forms-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/miglayout-core-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/miglayout-swing-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/TableLayout-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/beansbinding-src.zip!/src" />
+      <root url="jar://$PROJECT_DIR$/../../../../Program Files/JFormDesigner/redist/swing-layout-src.zip!/swing-layout-1.0.4/src/java" />
+    </SOURCES>
+  </library>
+</component>

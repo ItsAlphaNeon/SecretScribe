@@ -5,5 +5,6 @@ public class Main {
 
         SecretScribe secretScribe = new SecretScribe();
         secretScribe.run();
+
     }
 }

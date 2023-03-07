@@ -7,17 +7,37 @@ package view;
 import java.awt.*;
 import javax.swing.*;
 
+import com.formdev.flatlaf.intellijthemes.FlatDarkFlatIJTheme;
 import model.Message;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+
+import javax.swing.UIManager;
+
 /**
  * @author Neon
  */
 public class SecretScribeFrame extends javax.swing.JFrame {
-    public SecretScribeFrame() {
+
+    public SecretScribeFrame(int width, int height) {
+        try {
+            // dark mode for swing
+            UIManager.setLookAndFeel(new FlatDarkFlatIJTheme());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         initComponents();
+
+        this.chatFrame.setSize(width, height);
+        this.chatFrame.setVisible(true);
+
+
+        // create and show your Swing GUI here
+
 
     }
 
@@ -35,7 +55,6 @@ public class SecretScribeFrame extends javax.swing.JFrame {
         sendButton = new JButton();
         messageBar = new JTextField();
         serverNameLabel = new JLabel();
-        decryptChatButton = new JToggleButton();
 
         //======== chatFrame ========
         {
@@ -77,9 +96,6 @@ public class SecretScribeFrame extends javax.swing.JFrame {
             serverNameLabel.setFont(serverNameLabel.getFont().deriveFont(serverNameLabel.getFont().getSize() + 8f));
             serverNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-            //---- decryptChatButton ----
-            decryptChatButton.setText("Decrypt Chat");
-
             GroupLayout chatFrameContentPaneLayout = new GroupLayout(chatFrameContentPane);
             chatFrameContentPane.setLayout(chatFrameContentPaneLayout);
             chatFrameContentPaneLayout.setHorizontalGroup(
@@ -104,9 +120,7 @@ public class SecretScribeFrame extends javax.swing.JFrame {
                             .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
                                 .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                            .addComponent(sendButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(decryptChatButton, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(sendButton)
                         .addGap(9, 9, 9))
             );
             chatFrameContentPaneLayout.setVerticalGroup(
@@ -119,10 +133,7 @@ public class SecretScribeFrame extends javax.swing.JFrame {
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(chatFrameContentPaneLayout.createParallelGroup()
                             .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
-                            .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
-                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(decryptChatButton)
-                                .addGap(0, 332, Short.MAX_VALUE)))
+                            .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE))
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -135,6 +146,7 @@ public class SecretScribeFrame extends javax.swing.JFrame {
             chatFrame.setLocationRelativeTo(chatFrame.getOwner());
         }
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
+
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
@@ -150,7 +162,6 @@ public class SecretScribeFrame extends javax.swing.JFrame {
     private JButton sendButton;
     private JTextField messageBar;
     private JLabel serverNameLabel;
-    private JToggleButton decryptChatButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
     // ANYTHING BELOW THIS LINE IS NOT PROGRAM GENERATED
@@ -265,5 +276,9 @@ public class SecretScribeFrame extends javax.swing.JFrame {
 
     public Component getChatFrame() {
         return chatFrame;
+    }
+
+    public JTextField getMessageFieldReference() {
+        return messageBar;
     }
 }
