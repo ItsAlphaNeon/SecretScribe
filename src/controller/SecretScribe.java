@@ -22,7 +22,7 @@ public class SecretScribe {
     SecretScribeFrame secretScribeFrame;
     ServerConnectionFrame serverConnectionFrame;
     ArrayList<Message> messages = new ArrayList<>();
-    Crypt crypt = new Crypt();
+    private String pin = "0000";
 
 
     public void run() {
@@ -202,7 +202,7 @@ public class SecretScribe {
                     checkIfPinIsValid();
                 }
                 // if there is a valid pin, allow the user to send messages
-                if (controller.UserInput.isValidPin(secretScribeFrame.getPinField())) {
+                if (controller.UserInput.isValidPin(pin)) {
                     // if the user clicked the send button
                     if (secretScribeFrame.ifSendButtonClicked()) {
                         // check to see if the message field is empty
@@ -234,16 +234,14 @@ public class SecretScribe {
 
 
         // Populate the memberlist with the members of the server (if there are any)
-        //TODO: Get the members of the server and add them to the memberList
 
-
-    }
+    } //TODO: Get the members of the server and add them to the memberList
 
     private void createEncryptedMessage(String content) {
         if (content != null && content.length() > 0) {
             try {
                 // encrypt the msg
-                content = crypt.encrypt(content);
+                content = Crypt.encrypt(content, pin);
             } catch (Exception ex) {
             }
             // send the message to the server
@@ -253,11 +251,11 @@ public class SecretScribe {
 
     private void checkIfPinIsValid() {
         if (UserInput.isValidPin(secretScribeFrame.getPinField())) {
+            pin = secretScribeFrame.getPinField();
             // allow the user to send messages
             secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), true);
             // create a toast to notify the user that the pin is valid
             secretScribeFrame.createToast("Pin is valid", "Success");
-
         } else {
             // disable the send button
             secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
@@ -310,18 +308,9 @@ public class SecretScribe {
         secretScribeFrame = new SecretScribeFrame(600, 400);
     }
 
-    public void sendTestMessage(String content) { // Debug method TODO: Delete this
-        // make suretheres content
-        if (content != null && content.length() > 0) {
-            try {
-                // encrypt the msg
-                content = crypt.encrypt(content);
-            } catch (Exception ex) {
-            }
-            Message msg = createMessage(content);
-            messages.add(msg);
-        }
-    } // TODO delete
+    public void addToMessages(Message msg) {
+        messages.add(msg);
+    }
 
     // display the messages in the chat window
     // debug only, local messages in the array
@@ -330,9 +319,12 @@ public class SecretScribe {
         secretScribeFrame.clearChatWindow();
         for (Message msg : messages) {
             try {
-                msg.setContent(crypt.decrypt(msg.getContent()));
+                msg.setContent(Crypt.decrypt(msg.getContent(), pin));
+                System.out.println("Was decrypted");
+                secretScribeFrame.addMessage(msg);
             } catch (Exception ex) {
                 secretScribeFrame.addMessage(msg);
+                System.out.println("Was not decrypted");
             }
         }
     }
@@ -353,7 +345,7 @@ public class SecretScribe {
                 sendButtonClicked();
             }
         });
-    }
+    } // TODO add listeners for the enter key on all kinds of things
 
     private void checkPinButtonClicked() {
         // check if the pin is valid
@@ -366,9 +358,8 @@ public class SecretScribe {
             // create a new message
             Message msg = createMessage(secretScribeFrame.getMessageField());
             try {
-                msg.setContent(crypt.encrypt(msg.getContent()));
-                // TODO: SEND THE MESSAGE TO THE SERVER
-
+                msg.setContent(Crypt.encrypt(msg.getContent(), pin));
+                server.sendMessage(profile.getName(), msg.getContent());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

@@ -14,6 +14,8 @@ public class Message {
     public Message(String sendersName, String dateSent, String timeSent, String content) {
         this.sendersName = sendersName;
         this.content = content;
+        this.dateSent = dateSent;
+        this.timeSent = timeSent;
     }
 
     public String getSendersName() {

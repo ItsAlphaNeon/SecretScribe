@@ -26,17 +26,9 @@ public class UserInput {
 
     public static Boolean isValidPin(String pin) {
         // check if pin is 4 digits and is an integer
-        return (pin.length() == 4 && isInt(pin));
+        return (pin.length() >= 1);
     }
 
-    public static boolean isInt(String str) {
-        try {
-            int num = Integer.parseInt(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
 
     public static int getIntegerEqualTo(String prompt, int min, int max) {
         while (true) {

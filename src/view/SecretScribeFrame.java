@@ -256,6 +256,7 @@ public class SecretScribeFrame extends javax.swing.JFrame {
 
     public void addMessage(Message msg) {
         if (msg == null) {
+            System.out.println("Msg was null");
             return;
         }
         // add the message to the message display

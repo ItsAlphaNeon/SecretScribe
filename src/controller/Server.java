@@ -161,8 +161,7 @@ public class Server {
             String time = String.format("%tT", currentDate); // Format: HH:MM:SS
 
             // Create the message packet
-            String message = String.format("message:%s:%s:%s:%s", username, date, time, content);
-
+            String message = String.format("MESSAGE_SENT:%s~!!~%s~!!~%s~!!~%s", username, date, time, content);
 
             // Send the message packet to the server
             client.send(message);
