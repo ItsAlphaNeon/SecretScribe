@@ -32,7 +32,10 @@ public class SecretScribeFrame extends javax.swing.JFrame {
         initComponents();
         this.chatFrame.setSize(width, height);
         this.chatFrame.setVisible(true);
+        this.setName("SecretScribe");
 
+        //when the x button is clicked, close the program
+        this.chatFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void initComponents() {

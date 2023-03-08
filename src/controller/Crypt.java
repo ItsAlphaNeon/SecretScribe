@@ -1,71 +1,39 @@
 package controller;
 
-import view.ChatWindow;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.util.Base64;
 
-
 public class Crypt {
+    private static final byte[] IV = {
+            0x79, 0x34, 0x56, 0x78, 0x70, 0x25, 0x47, 0x12,
+            0x11, 0x43, 0x29, 0x46, 0x76, 0x54, 0x32, 0x10
+    };
 
-    private SecretKey key;
-    private final int KEY_SIZE = 128;
-    private final int DATA_LENGTH = 128;
-    private Cipher encryptionCipher;
-
-
-    public void setKey(String pin) throws Exception {
-        key = generateAesKeyFromPin(pin);
+    private static SecretKeySpec generateKey(String passcode) throws Exception {
+        byte[] keyBytes = passcode.getBytes(StandardCharsets.UTF_8);
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = md.digest(keyBytes);
+        byte[] truncatedHash = new byte[16];
+        System.arraycopy(hashBytes, 0, truncatedHash, 0, 16);
+        return new SecretKeySpec(truncatedHash, "AES");
     }
 
-    public String encrypt(String data) throws Exception {
-        byte[] dataInBytes = data.getBytes();
-        encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
-        encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encryptedBytes = encryptionCipher.doFinal(dataInBytes);
-        return encode(encryptedBytes);
+    public static String encrypt(String plainText, String passcode) throws Exception {
+        SecretKeySpec keySpec = generateKey(passcode);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(IV));
+        byte[] encrypted = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encrypted);
     }
 
-    public String decrypt(String encryptedData) throws Exception {
-        byte[] dataInBytes = decode(encryptedData);
-        Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec spec = new GCMParameterSpec(DATA_LENGTH, encryptionCipher.getIV());
-        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
-        byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
-        return new String(decryptedBytes);
+    public static String decrypt(String cipherText, String passcode) throws Exception {
+        SecretKeySpec keySpec = generateKey(passcode);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(IV));
+        byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(cipherText));
+        return new String(decrypted, StandardCharsets.UTF_8);
     }
-
-    private String encode(byte[] data) {
-        return Base64.getEncoder().encodeToString(data);
-    }
-
-    private byte[] decode(String data) {
-        return Base64.getDecoder().decode(data);
-    }
-
-    public static SecretKeySpec generateAesKeyFromPin(String pin) {
-        // Convert the PIN to a byte array
-        byte[] pinBytes = pin.getBytes();
-
-        // Create a new byte array to hold the padded key
-        byte[] keyBytes = new byte[16];
-
-        // Copy the PIN bytes to the key byte array, padding with zeros if necessary
-        for (int i = 0; i < 16; i++) {
-            if (i < pinBytes.length) {
-                keyBytes[i] = pinBytes[i];
-            } else {
-                keyBytes[i] = 0;
-            }
-        }
-        // Create a SecretKeySpec object from the key byte array
-        SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
-
-        return keySpec;
-    }
-
 }

@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.net.URI;
 
+import model.Message;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -15,18 +16,13 @@ public class Server {
     private String username;
     private String ip;
     private int port;
+    private SecretScribe secretScribe;
 
     public boolean checkIfConnected() {
         return (client != null);
     }
 
-    public Server(String name, String ip, int port) {
-        this.name = name;
-        this.ip = ip;
-        this.port = port;
-    }
-
-    public Server(String serverIP, String username) {
+    public Server(String serverIP, String username, SecretScribe secretScribe) {
         this.ip = serverIP;
         // determine if port is specified, if not use the port the ip is pointing to
         if (serverIP.contains(":")) {
@@ -38,6 +34,7 @@ public class Server {
             // Start the server
         }
         this.username = username;
+        this.secretScribe = secretScribe;
         RunServer(this.ip, this.port, this.username);
     }
 
@@ -80,8 +77,29 @@ public class Server {
                         // Split the message into its parts by the ":" character
                         String[] messageParts = message.split(":", 2);
                         switch (messageParts[0]) {
+                            case "MESSAGE_SENT" -> {
+                                //splits the message into its parts by the "\n" (name, date, time, content)
+                                String[] messageParts2 = messageParts[1].split("~!!~", 4);
+                                // Create a new message object
+                                Message newMessage = new Message(messageParts2[0], messageParts2[1], messageParts2[2], messageParts2[3]);
+                                System.out.println(messageParts2[0] + " " + messageParts2[1] + " " + messageParts2[2] + " " + messageParts2[3]); // DEBUG
+                                secretScribe.addToMessages(newMessage);
+                                System.out.println("Message received from server: " + messageParts[1]); // DEBUG
+                                // Update the message list
+                                secretScribe.displayMessages();
+
+                            }
+                            case "AUTHENTICATION_FAILED" -> {
+                                System.out.println("Authentication failed"); // DEBUG
+                                // Close the connection
+                                client.close();
+                                // Show a message to the user
+                                JOptionPane.showMessageDialog(null, "Authentication failed, please try again", "Authentication Failed", JOptionPane.ERROR_MESSAGE);
+                            }
                             case "MEMBER_LIST" -> {
                                 System.out.println("Received member list from server: " + messageParts[1]); // DEBUG
+                                // Update the member list
+                                System.out.println(message);
                             }
                             case "AUTHENTICATED" -> {
                                 isAuthenticated = true;
@@ -170,5 +188,22 @@ public class Server {
             }
         }
     }
+
+    public void askTheServerForTheMemberList(String name) {
+        // Create the message packet
+        String message = "MEMBER_REQUEST:" + name;
+        // Send the message packet to the server
+        client.send(message);
+    }
+
+    private void updateTheMemberList(String message) {
+        // Split the message into its parts by the ":" character
+        String[] messageParts = message.split(":", 2);
+        // make the member list a string array
+        String[] memberList = messageParts[1].split(",");
+        // update the member list
+        secretScribe.setMemberList(memberList);
+    }
+
 }
 

@@ -8,12 +8,12 @@ import view.SecretScribeFrame;
 import view.popups.ServerConnectionFrame;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
-
 
 public class SecretScribe {
     Profile profile;
@@ -33,7 +33,7 @@ public class SecretScribe {
         // Wait for the user to connect to the server
         waitForConnection();
         // create the main window
-        setSecretScribeWindowCreate();
+        chatWindowPopup();
         // setup the timers
         setupTimers();
 
@@ -104,9 +104,9 @@ public class SecretScribe {
                                 // get the server ip from the server connection frame
                                 String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
                                 // make sure the IP is not null
-                                if (serverIP != null) {
+                                if (server == null && serverIP != null) {
                                     // create a new server
-                                    server = new Server(serverIP, profile.getName());
+                                    server = new Server(serverIP, profile.getName(), SecretScribe.this);
                                     // close the server connection frame
                                     serverConnectionFrame.dispose();
                                 } else {
@@ -176,20 +176,19 @@ public class SecretScribe {
         // Create a timer to send a heartbeat every 5 seconds
         Timer heartbeatTimer = new Timer(5000, e -> server.sendHeartbeat(profile.getName()));
         heartbeatTimer.start();
+
+        Timer askTheServerForTheMemberListTimer = new Timer(14000, e -> server.askTheServerForTheMemberList(profile.getName()));
+        askTheServerForTheMemberListTimer.start();
     }
 
     public Message createMessage(String content) {
         if (profile != null) {
-            System.out.println("The profile is not null"); // DEBUG TODO: Get rid of this line.
             Message msg = null;
             if (content.length() > 0) {
                 msg = new Message(profile.getName(), DateUtils.getDate().toString(), DateUtils.getTime().toString(), content);
             }
-            if (msg != null) {
-                return msg;
-            }
+            return msg;
         }
-        System.out.println("The profile is null"); // DEBUG TODO: Get rid of this line.
         return null;
     }
 
@@ -231,7 +230,7 @@ public class SecretScribe {
         // Change the serverNameLabel to the server name
         secretScribeFrame.setServerNameLabel(server.getName());
         // Make sure the password field is editable
-        secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(),true);
+        secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
 
 
         // Populate the memberlist with the members of the server (if there are any)
@@ -248,7 +247,7 @@ public class SecretScribe {
             } catch (Exception ex) {
             }
             // send the message to the server
-            server.sendMessage(profile.getName(),content);
+            server.sendMessage(profile.getName(), content);
         }
     }
 
@@ -306,17 +305,9 @@ public class SecretScribe {
         }
     }
 
-    private void setSecretScribeWindowCreate() {
+    private void chatWindowPopup() {
         // create a new SecretScribeFrame
         secretScribeFrame = new SecretScribeFrame(600, 400);
-
-        // disable the send button
-        secretScribeFrame.setButtonClickable(secretScribeFrame.getSendButton(), false);
-        // disable the pin field
-        secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), false);
-        // set the window title
-        secretScribeFrame.setName("SecretScribe - " + profile.getName());
-
     }
 
     public void sendTestMessage(String content) { // Debug method TODO: Delete this
@@ -387,13 +378,14 @@ public class SecretScribe {
     }
 
     public void populateServerList(ServerConnectionFrame serverConnectionFrame) {
-        // populate the server ip list combo box, making sure its not null
-        ServerList.getServerList();
         //clear the combo box
         serverConnectionFrame.serverIPListComboBox.removeAllItems();
-        for (String serverIP : ServerList.getServerList()) {
-            serverConnectionFrame.serverIPListComboBox.addItem(serverIP);
-        }
+        // take each string from the serverList and add it to the combo box
+
+    }
+
+    public void setMemberList(String[] members) {
+        secretScribeFrame.getMemberList().setText(Arrays.toString(members));
     }
 }
 
