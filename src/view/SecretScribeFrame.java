@@ -281,4 +281,6 @@ public class SecretScribeFrame extends javax.swing.JFrame {
     public void setServerNameLabel(String title) {
         chatFrame.setTitle(title);
     }
+
+
 }

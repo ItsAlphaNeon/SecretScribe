@@ -15,7 +15,10 @@ public class Server {
     private String username;
     private String ip;
     private int port;
-    public boolean isConnected = false;
+
+    public boolean checkIfConnected() {
+        return (client != null);
+    }
 
     public Server(String name, String ip, int port) {
         this.name = name;
@@ -54,13 +57,16 @@ public class Server {
         return name;
     }
 
+    private WebSocketClient client;
+
+    private boolean isAuthenticated = false;
 
     public void RunServer(String ip, int port, String username) {
         // Create a new thread to run the server
         Thread serverThread = new Thread(() -> {
             try {
                 // Create a WebSocketClient instance
-                WebSocketClient client = new WebSocketClient(new URI("ws://" + ip + ":" + port)) {
+                client = new WebSocketClient(new URI("ws://" + ip + ":" + port)) {
                     @Override
                     public void onOpen(ServerHandshake handshake) {
                         System.out.println("Connected to server: " + ip + ":" + port); // DEBUG
@@ -71,26 +77,33 @@ public class Server {
 
                     @Override
                     public void onMessage(String message) {
-                        System.out.println("Received response from server"); // DEBUG
-                        // Print the response from the server
-                        System.out.println("Server response: " + message); // DEBUG
-                        if (message.equals("AUTHENTICATED")) {
-                            System.out.println("Server authenticated"); // DEBUG
-                            isConnected = true;
-                        } else {
-                            System.out.println("Server not authenticated"); // DEBUG
-                            isConnected = false;
+                        // Split the message into its parts by the ":" character
+                        String[] messageParts = message.split(":", 2);
+                        switch (messageParts[0]) {
+                            case "MEMBER_LIST" -> {
+                                System.out.println("Received member list from server: " + messageParts[1]); // DEBUG
+                            }
+                            case "AUTHENTICATED" -> {
+                                isAuthenticated = true;
+                            }
+                            case "HEARTBEAT_RECEIVED" -> {
+                                System.out.println("Heartbeat received from server");
+                            } // DEBUG
+                            default -> {
+                                System.out.println("Received message from server: " + message); // DEBUG
+                            }
                         }
-
                     }
 
                     @Override
                     public void onClose(int code, String reason, boolean remote) {
                         System.out.println("WebSocket connection closed"); // DEBUG
+                        client = null;
                     }
 
                     @Override
                     public void onError(Exception ex) {
+                        client = null;
                         System.out.println("Error connecting to server: " + ip + ":" + port); // DEBUG
                         System.out.println(ex.getMessage());
                         int response = JOptionPane.showConfirmDialog(null, "Could not connect to server, try again?", "Connection Error", JOptionPane.YES_NO_OPTION);
@@ -122,13 +135,6 @@ public class Server {
         serverThread.start();
     }
 
-
-    public boolean isConnected() {
-        return isConnected;
-    }
-
-
-
     public void sendMessage(String username, String content) {
         try {
             // Get the current date and time
@@ -139,79 +145,28 @@ public class Server {
             // Create the message packet
             String message = String.format("message:%s:%s:%s:%s", username, date, time, content);
 
-            // Connect to the server using WebSocket client
-            WebSocketClient client = new WebSocketClient(URI.create("ws://" + ip + ":" + port)) {
-                @Override
-                public void onOpen(ServerHandshake serverHandshake) {
-                    // WebSocket connection is opened
-                    System.out.println("WebSocket connection opened");
-                    // Send the message packet to the server
-                    send(message);
-                    // Close the connection
-                    close();
-                }
 
-                @Override
-                public void onMessage(String s) {
-                    // Do nothing
-                }
+            // Send the message packet to the server
+            client.send(message);
 
-                @Override
-                public void onClose(int i, String s, boolean b) {
-                    // Do nothing
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            client.connect();
         } catch (Exception e) {
-            isConnected = false;
+            client = null;
         }
     }
 
     // let the server know that the user is still alive
     public void sendHeartbeat(String username) {
-        if (isConnected) {
+        if (checkIfConnected()) {
             try {
                 // Create the heartbeat packet
-                String heartbeat = String.format("heartbeat:%s", username);
+                String heartbeat = String.format("HEARTBEAT:%s", username);
 
-                // Connect to the server using WebSocket client
-                WebSocketClient client = new WebSocketClient(URI.create("ws://" + ip + ":" + port)) {
-                    @Override
-                    public void onOpen(ServerHandshake serverHandshake) {
-                        // WebSocket connection is opened
-                        System.out.println("WebSocket connection opened");
-                        // Send the heartbeat packet to the server
-                        send(heartbeat);
-                        System.out.println("Sent heartbeat to server");
-                        // Close the connection
-                        close();
-                    }
+                // Send the heartbeat packet to the server
+                client.send(heartbeat);
 
-                    @Override
-                    public void onMessage(String s) {
-                        // Do nothing
-                    }
-
-                    @Override
-                    public void onClose(int i, String s, boolean b) {
-                        // Do nothing
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        System.out.println("Error sending heartbeat to server, connection lost");
-                        isConnected = false;
-                    }
-                };
-                client.connect();
             } catch (Exception e) {
                 System.out.println("Error sending heartbeat to server, connection lost");
-                isConnected = false;
+                client = null;
             }
         }
     }
