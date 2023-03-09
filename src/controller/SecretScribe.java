@@ -110,21 +110,11 @@ public class SecretScribe {
                         //make sure the combo box is editable
                         serverConnectionFrame.serverIPListComboBox.setEditable(true);
                         // add an action listener to the ok button
+
                         serverConnectionFrame.okButton.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                // get the server ip from the server connection frame
-                                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
-                                // make sure the IP is not null
-                                if (server == null && serverIP != null) {
-                                    // create a new server
-                                    server = new Server(serverIP, profile.getName(), SecretScribe.this);
-                                    // close the server connection frame
-                                    serverConnectionFrame.dispose();
-                                } else {
-                                    // if the IP is null, display an error message
-                                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
-                                }
+                                connectToServer();
                             }
                         });
                         // add an action listener to the save button
