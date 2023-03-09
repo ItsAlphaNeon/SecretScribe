@@ -285,13 +285,4 @@ public class SecretScribeFrame extends javax.swing.JFrame {
     public void setServerNameLabel(String title) {
         chatFrame.setTitle(title);
     }
-
-    public void setMemberList(String[] members) {
-        // clear the member list
-        memberList.setText("");
-        // add the members to the member list
-        for (String member : members) {
-            memberList.append(member + " \n");
-        }
-    }
 }

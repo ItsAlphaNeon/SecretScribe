@@ -18,29 +18,24 @@ public class ServerList {
     }
 
     public void saveServer(String serverIP) {
-        // check to see if the file exists
-        File file = new File("servers.txt");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+        // check to see if the serverIP already exists in the file "servers.txt"
+        if (!serverIP.contains("~!!~")) {
+            String[] savedServers = FileIO.readFromFile("servers.txt").split("~!!~");
+            for (String savedServer : savedServers) {
+                savedServer = savedServer.trim();
+                if (savedServer.contains(serverIP)) {
+                    // if it does, do not save it again
+                    //TODO: ADD THE SERVER LIST REFRESH
+                    return;
+                }
             }
         }
-        // check if server is already saved
-        String[] savedServers = FileIO.readFromFile("servers.txt").split("\r\n");
-        for (String savedServer : savedServers) {
-            if (savedServer.equals(serverIP)) {
-                System.out.println("Server already saved"); // DEBUG
-                return;
-            }
-        }
-        // if not saved, save it
-        // save the server to a file "servers.txt" in a way that can be read by the loadServer method
-        FileIO.writeToFile("servers.txt", (FileIO.readFromFile("servers.txt") + serverIP + "\n\r").trim());
-        System.out.println("Server saved"); // DEBUG
+        // if it doesn't, save it
+        // save the server to a file "servers.txt" in a way that can be read by the getServerList method
+        FileIO.writeToFile("servers.txt", FileIO.readFromFile("servers.txt") + serverIP + "~!!~");
+        System.out.println("Server saved");
         // refresh the server list
-        populateServerList();
+        //TODO: ADD THE SERVER LIST REFRESH
     }
 
     public void deleteServer(String serverIP) {
@@ -54,7 +49,7 @@ public class ServerList {
             }
         }
         // check if server is already saved
-        String[] savedServers = FileIO.readFromFile("servers.txt").split("\r\n");
+        String[] savedServers = FileIO.readFromFile("servers.txt").split("~!!~");
         for (String savedServer : savedServers) {
             savedServer = savedServer.trim();
             System.out.println("Saved server: " + savedServer); // DEBUG
@@ -66,7 +61,6 @@ public class ServerList {
                 FileIO.writeToFile("servers.txt", updatedServers);
                 System.out.println("Server deleted"); // DEBUG
                 // refresh the server list
-                populateServerList();
                 return;
             }
         }
@@ -130,13 +124,4 @@ public class ServerList {
         this.serverConnectionFrame = serverConnectionFrame;
     }
 
-    public void populateServerList() {
-        // populate the server ip list combo box, making sure its not null
-        ServerList.getServerList();
-        // clear and repopulate the server list
-        serverConnectionFrame.serverIPListComboBox.removeAllItems();
-        for (String serverIP : ServerList.getServerList()) {
-            serverConnectionFrame.serverIPListComboBox.addItem(serverIP);
-        }
-    }
 }
