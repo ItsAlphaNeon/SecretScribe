@@ -30,7 +30,7 @@ public class Server {
             this.ip = serverIP.substring(0, serverIP.indexOf(":"));
             // Start the server with the specified port
         } else {
-            this.port = 6969; // default port for this application
+            this.port = 8080; // default port for this application
             // Start the server
         }
         this.username = username;
@@ -116,7 +116,15 @@ public class Server {
                     @Override
                     public void onClose(int code, String reason, boolean remote) {
                         System.out.println("WebSocket connection closed"); // DEBUG
-                        client = null;
+                        // retry connection
+                        int response = JOptionPane.showConfirmDialog(null, "Connection to server lost, try again?", "Connection Lost", JOptionPane.YES_NO_OPTION);
+                        if (response == JOptionPane.YES_OPTION) {
+                            // Try to connect again
+                            RunServer(ip, port, username);
+                        } else {
+                            // Exit the application
+                            System.exit(0);
+                        }
                     }
 
                     @Override
