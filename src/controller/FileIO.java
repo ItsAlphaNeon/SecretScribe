@@ -70,7 +70,7 @@ public class FileIO {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String lineString;
             while ((lineString = reader.readLine()) != null) {
-                sb.append(lineString);
+                sb.append(lineString + '\n');
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());

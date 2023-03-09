@@ -10,8 +10,6 @@ import view.popups.ServerConnectionFrame;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,16 +75,6 @@ public class SecretScribe {
                         // create a new server connection frame
                         ServerConnectionFrame serverConnectionFrame = new ServerConnectionFrame();
                         // set the server connection frame to visible
-                        serverConnectionFrame.serverIPListComboBox.addKeyListener(new KeyAdapter() {
-                            @Override
-                            public void keyPressed(KeyEvent e) {
-                                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                                    // connect to the server
-                                    connectToServer();
-                                }
-                            }
-                        });
-
                         serverConnectionFrame.setVisible(true);
                         // ask the user if they want to close the program if they close the server connection frame
                         serverConnectionFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -110,11 +98,21 @@ public class SecretScribe {
                         //make sure the combo box is editable
                         serverConnectionFrame.serverIPListComboBox.setEditable(true);
                         // add an action listener to the ok button
-
                         serverConnectionFrame.okButton.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                connectToServer();
+                                // get the server ip from the server connection frame
+                                String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
+                                // make sure the IP is not null
+                                if (server == null && serverIP != null) {
+                                    // create a new server
+                                    server = new Server(serverIP, profile.getName(), SecretScribe.this);
+                                    // close the server connection frame
+                                    serverConnectionFrame.dispose();
+                                } else {
+                                    // if the IP is null, display an error message
+                                    JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
+                                }
                             }
                         });
                         // add an action listener to the save button
@@ -129,8 +127,6 @@ public class SecretScribe {
                                     serverList.saveServer(serverIP);
                                     // inform the user that the IP was saved
                                     JOptionPane.showMessageDialog(serverConnectionFrame, "Server IP saved");
-                                    // populate the server list combo box
-                                    populateServerList(serverConnectionFrame);
 
                                 } else {
                                     // if the IP is null, display an error message
@@ -236,7 +232,10 @@ public class SecretScribe {
         // Make sure the password field is editable
         secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
 
-    }
+
+        // Populate the memberlist with the members of the server (if there are any)
+
+    } //TODO: Get the members of the server and add them to the memberList
 
     private void createEncryptedMessage(String content) {
         if (content != null && content.length() > 0) {
@@ -307,32 +306,6 @@ public class SecretScribe {
     private void chatWindowPopup() {
         // create a new SecretScribeFrame
         secretScribeFrame = new SecretScribeFrame(600, 400);
-        secretScribeFrame.getMessageFieldReference().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    // check to see if the message field is empty
-                    if (secretScribeFrame.getMessageField().length() > 0) {
-                        // create a new message
-                        createEncryptedMessage(secretScribeFrame.getMessageField());
-                        // clear the message field
-                        secretScribeFrame.clearMessageField();
-                    }
-                }
-            }
-        });
-
-        // add a listener for the pin field to check if the pin is valid when the user presses enter
-
-        secretScribeFrame.getPinFieldReference().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    // check if the pin is valid
-                    checkIfPinIsValid();
-                }
-            }
-        });
     }
 
     public void addToMessages(Message msg) {
@@ -356,21 +329,23 @@ public class SecretScribe {
         }
     }
 
-
-    private void connectToServer() {
-        // get the server ip from the server connection frame
-        String serverIP = (String) serverConnectionFrame.serverIPListComboBox.getSelectedItem();
-        // make sure the IP is not null
-        if (server == null && serverIP != null) {
-            // create a new server
-            server = new Server(serverIP, profile.getName(), SecretScribe.this);
-            // close the server connection frame
-            serverConnectionFrame.dispose();
-        } else {
-            // if the IP is null, display an error message
-            JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
-        }
-    }
+    // set up the gui listeners for the main window
+    private void setupListeners() {
+        // add a listener for the send button
+        secretScribeFrame.getSendButton().addActionListener(e -> {
+            sendButtonClicked();
+        });
+        // add a listener for the check pin button
+        secretScribeFrame.getCheckPinButton().addActionListener(e -> {
+            checkPinButtonClicked();
+        });
+        secretScribeFrame.getMessageFieldReference().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // call sendButtonClicked() when the user presses enter
+                sendButtonClicked();
+            }
+        });
+    } // TODO add listeners for the enter key on all kinds of things
 
     private void checkPinButtonClicked() {
         // check if the pin is valid
@@ -396,19 +371,12 @@ public class SecretScribe {
     public void populateServerList(ServerConnectionFrame serverConnectionFrame) {
         //clear the combo box
         serverConnectionFrame.serverIPListComboBox.removeAllItems();
-        String savedIPs = FileIO.readFromFile("servers.txt");
-        // add the servers to the combo box, splitting the string by the regex "~!!~"
-        for (String server : savedIPs.split("~!!~")) {
-            serverConnectionFrame.serverIPListComboBox.addItem(server);
-        }
+        // take each string from the serverList and add it to the combo box
+
     }
 
     public void setMemberList(String members) {
         secretScribeFrame.getMemberList().setText(members);
-    }
-
-    public void repromptUsername() {
-        usernamePopUp();
     }
 }
 

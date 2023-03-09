@@ -109,7 +109,7 @@ public class Server {
                                  */
                                 StringBuilder formattedList = new StringBuilder();
                                 for (String member : memberList) {
-                                    formattedList.append("- ").append(member).append(" \r \r");
+                                    formattedList.append("- ").append(member).append(" \r \r"); // \r \r is a new line
                                 }
                                 // Update the member list
                                 secretScribe.setMemberList(formattedList.toString());
@@ -122,16 +122,7 @@ public class Server {
                             }
                             case "HEARTBEAT_RECEIVED" -> {
                                 System.out.println("Heartbeat received from server");
-                            }
-                            case "USERNAME_TAKEN" -> {
-                                System.out.println("Username taken"); // DEBUG
-                                // Close the connection
-                                client.close();
-                                // Show a message to the user
-                                JOptionPane.showMessageDialog(null, "Username taken, please try again", "Username Taken", JOptionPane.ERROR_MESSAGE);
-                                // restart the application
-                                secretScribe.repromptUsername();
-                            }
+                            } // DEBUG
                             default -> {
                                 System.out.println("Received message from server: " + message); // DEBUG
                             }
