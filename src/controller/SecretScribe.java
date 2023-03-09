@@ -375,8 +375,8 @@ public class SecretScribe {
 
     }
 
-    public void setMemberList(String[] members) {
-        secretScribeFrame.getMemberList().setText(Arrays.toString(members));
+    public void setMemberList(String members) {
+        secretScribeFrame.getMemberList().setText(members);
     }
 }
 

@@ -102,12 +102,23 @@ public class Server {
                                 System.out.println(message);
                                 // splits the list into each part by the "~!!~" separator
                                 String[] memberList = messageParts[1].split("~!!~");
+                                /* Format the list to set the textArea like this:
+                                - Member 1
+                                - Member 2
+                                - Member 3
+                                 */
+                                StringBuilder formattedList = new StringBuilder();
+                                for (String member : memberList) {
+                                    formattedList.append("- ").append(member).append(" \r \r"); // \r \r is a new line
+                                }
                                 // Update the member list
-                                secretScribe.setMemberList(memberList);
-
+                                secretScribe.setMemberList(formattedList.toString());
                             }
                             case "AUTHENTICATED" -> {
                                 isAuthenticated = true;
+                                // ask the server for the member list
+                                send("GET_MEMBER_LIST");
+                                System.out.println("Authentication successful"); // DEBUG
                             }
                             case "HEARTBEAT_RECEIVED" -> {
                                 System.out.println("Heartbeat received from server");
@@ -207,15 +218,5 @@ public class Server {
         // Send the message packet to the server
         client.send(message);
     }
-
-    private void updateTheMemberList(String message) {
-        // Split the message into its parts by the ":" character
-        String[] messageParts = message.split(":", 2);
-        // make the member list a string array
-        String[] memberList = messageParts[1].split(",");
-        // update the member list
-        secretScribe.setMemberList(memberList);
-    }
-
 }
 
