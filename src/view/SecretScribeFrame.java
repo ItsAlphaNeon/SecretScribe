@@ -99,48 +99,48 @@ public class SecretScribeFrame extends javax.swing.JFrame {
             GroupLayout chatFrameContentPaneLayout = new GroupLayout(chatFrameContentPane);
             chatFrameContentPane.setLayout(chatFrameContentPaneLayout);
             chatFrameContentPaneLayout.setHorizontalGroup(
-                chatFrameContentPaneLayout.createParallelGroup()
-                    .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                            .addComponent(memberLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    chatFrameContentPaneLayout.createParallelGroup()
                             .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(pinField, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(setPinButton))
-                            .addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, 177, GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(chatFrameContentPaneLayout.createParallelGroup()
-                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(messageBar, GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(serverNameLabel, GroupLayout.DEFAULT_SIZE, 647, Short.MAX_VALUE)
-                                .addGap(41, 41, 41))
-                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                                .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)))
-                        .addComponent(sendButton)
-                        .addGap(9, 9, 9))
+                                    .addGap(30, 30, 30)
+                                    .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(memberLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
+                                                    .addComponent(pinField, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
+                                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(setPinButton))
+                                            .addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, 177, GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(chatFrameContentPaneLayout.createParallelGroup()
+                                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
+                                                    .addComponent(messageBar, GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
+                                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))
+                                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
+                                                    .addComponent(serverNameLabel, GroupLayout.DEFAULT_SIZE, 647, Short.MAX_VALUE)
+                                                    .addGap(41, 41, 41))
+                                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
+                                                    .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
+                                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)))
+                                    .addComponent(sendButton)
+                                    .addGap(9, 9, 9))
             );
             chatFrameContentPaneLayout.setVerticalGroup(
-                chatFrameContentPaneLayout.createParallelGroup()
-                    .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                            .addComponent(memberLabel, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(serverNameLabel, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(chatFrameContentPaneLayout.createParallelGroup()
-                            .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
-                            .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(setPinButton)
-                            .addComponent(sendButton)
-                            .addComponent(messageBar, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE))
-                        .addGap(11, 11, 11))
+                    chatFrameContentPaneLayout.createParallelGroup()
+                            .addGroup(chatFrameContentPaneLayout.createSequentialGroup()
+                                    .addGap(23, 23, 23)
+                                    .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                            .addComponent(memberLabel, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(serverNameLabel, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(chatFrameContentPaneLayout.createParallelGroup()
+                                            .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
+                                            .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE))
+                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(chatFrameContentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(setPinButton)
+                                            .addComponent(sendButton)
+                                            .addComponent(messageBar, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE))
+                                    .addGap(11, 11, 11))
             );
             chatFrame.pack();
             chatFrame.setLocationRelativeTo(chatFrame.getOwner());
@@ -286,5 +286,12 @@ public class SecretScribeFrame extends javax.swing.JFrame {
         chatFrame.setTitle(title);
     }
 
-
+    public void setMemberList(String[] members) {
+        // clear the member list
+        memberList.setText("");
+        // add the members to the member list
+        for (String member : members) {
+            memberList.append(member + " \n");
+        }
+    }
 }

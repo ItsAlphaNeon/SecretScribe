@@ -100,6 +100,11 @@ public class Server {
                                 System.out.println("Received member list from server: " + messageParts[1]); // DEBUG
                                 // Update the member list
                                 System.out.println(message);
+                                // splits the list into each part by the "~!!~" separator
+                                String[] memberList = messageParts[1].split("~!!~");
+                                // Update the member list
+                                secretScribe.setMemberList(memberList);
+
                             }
                             case "AUTHENTICATED" -> {
                                 isAuthenticated = true;
