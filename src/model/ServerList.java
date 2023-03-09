@@ -18,7 +18,7 @@ public class ServerList {
     }
 
     public void saveServer(String serverIP) {
-        // check to see if the file exists
+       // check to see if the file exists, and if it doesn't, create it
         File file = new File("servers.txt");
         if (!file.exists()) {
             try {
@@ -28,16 +28,22 @@ public class ServerList {
             }
         }
         // check if server is already saved
-        String[] savedServers = FileIO.readFromFile("servers.txt").split("\r\n");
+        String[] savedServers = FileIO.readFromFile("servers.txt").split("~!!~");
         for (String savedServer : savedServers) {
-            if (savedServer.equals(serverIP)) {
-                System.out.println("Server already saved"); // DEBUG
+            savedServer = savedServer.trim();
+            System.out.println("Saved server: " + savedServer); // DEBUG
+            if (savedServer.contains(serverIP)) {
+                // if saved, print a message
+                System.out.println("Server Already Saved"); // DEBUG
+                populateServerList();
                 return;
             }
         }
-        // if not saved, save it
-        // save the server to a file "servers.txt" in a way that can be read by the loadServer method
-        FileIO.writeToFile("servers.txt", (FileIO.readFromFile("servers.txt") + serverIP + "\n\r").trim());
+        // if the server was not found, save it
+        // save the server to a file "servers.txt" in a way that can be read by the getServerList method
+        String updatedServers = FileIO.readFromFile("servers.txt") + serverIP + "~!!~";
+        System.out.println("Updated servers: " + updatedServers); // DEBUG
+        FileIO.writeToFile("servers.txt", updatedServers);
         System.out.println("Server saved"); // DEBUG
         // refresh the server list
         populateServerList();

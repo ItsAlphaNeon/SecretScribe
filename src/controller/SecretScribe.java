@@ -44,6 +44,7 @@ public class SecretScribe {
     }
 
     private void waitForConnection() {
+
         while (server == null) {
             try {
                 Thread.sleep(1000);
@@ -127,7 +128,8 @@ public class SecretScribe {
                                     serverList.saveServer(serverIP);
                                     // inform the user that the IP was saved
                                     JOptionPane.showMessageDialog(serverConnectionFrame, "Server IP saved");
-
+                                    // update the server list
+                                    populateServerList(serverConnectionFrame);
                                 } else {
                                     // if the IP is null, display an error message
                                     JOptionPane.showMessageDialog(serverConnectionFrame, "Please enter a valid IP address");
@@ -231,11 +233,8 @@ public class SecretScribe {
         secretScribeFrame.setServerNameLabel(server.getName());
         // Make sure the password field is editable
         secretScribeFrame.setPasswordFieldEditable(secretScribeFrame.getPinFieldReference(), true);
-
-
-        // Populate the memberlist with the members of the server (if there are any)
-
-    } //TODO: Get the members of the server and add them to the memberList
+        
+    }
 
     private void createEncryptedMessage(String content) {
         if (content != null && content.length() > 0) {

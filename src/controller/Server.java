@@ -17,6 +17,8 @@ public class Server {
     private String ip;
     private int port;
     private SecretScribe secretScribe;
+    private boolean hasRetried;
+    public long lastTimeHeartbeatReceived;
 
     public boolean checkIfConnected() {
         return (client != null);
@@ -109,20 +111,29 @@ public class Server {
                                  */
                                 StringBuilder formattedList = new StringBuilder();
                                 for (String member : memberList) {
-                                    formattedList.append("- ").append(member).append(" \r \r"); // \r \r is a new line
+                                    formattedList.append("- ").append(member).append(" \r \n"); // \r \r is a new line
                                 }
                                 // Update the member list
                                 secretScribe.setMemberList(formattedList.toString());
                             }
                             case "AUTHENTICATED" -> {
                                 isAuthenticated = true;
-                                // ask the server for the member list
-                                send("GET_MEMBER_LIST:" + username);
                                 System.out.println("Authentication successful"); // DEBUG
+                                // Send a request to the server to get the member list
+                                askTheServerForTheMemberList(name);
                             }
                             case "HEARTBEAT_RECEIVED" -> {
                                 System.out.println("Heartbeat received from server");
+                                lastTimeHeartbeatReceived = new Date().getTime();
+
+                                hasRetried = false;
                             } // DEBUG
+                            case "NEW_MEMBER" -> {
+                                System.out.println("New member joined the server: " + messageParts[1]); // DEBUG
+                                newMemberJoined(messageParts[1]);
+                                // Update the member list
+                                askTheServerForTheMemberList(name);
+                            }
                             default -> {
                                 System.out.println("Received message from server: " + message); // DEBUG
                             }
@@ -145,36 +156,24 @@ public class Server {
 
                     @Override
                     public void onError(Exception ex) {
-                        client = null;
-                        System.out.println("Error connecting to server: " + ip + ":" + port); // DEBUG
-                        System.out.println(ex.getMessage());
-                        int response = JOptionPane.showConfirmDialog(null, "Could not connect to server, try again?", "Connection Error", JOptionPane.YES_NO_OPTION);
-                        if (response == JOptionPane.YES_OPTION) {
-                            // Try to connect again
-                            RunServer(ip, port, username);
-                        } else {
-                            // Exit the application
-                            System.exit(0);
-                        }
+                        System.out.println("Error: " + ex.getMessage()); // DEBUG
                     }
                 };
                 // Connect to the server
                 client.connect();
-            } catch (Exception e) {
-                System.out.println("Error connecting to server: " + ip + ":" + port); // DEBUG
-                System.out.println(e.getMessage());
-                int response = JOptionPane.showConfirmDialog(null, "Could not connect to server, try again?", "Connection Error", JOptionPane.YES_NO_OPTION);
-                if (response == JOptionPane.YES_OPTION) {
-                    // Try to connect again
-                    RunServer(ip, port, username);
-                } else {
-                    // Exit the application
-                    System.exit(0);
-                }
+            } catch (Exception ignored) {
             }
         });
         // Start the thread
         serverThread.start();
+    }
+
+    private void newMemberJoined(String messagePart) {
+        // Create a new message object
+        Message newMessage = new Message("Server", "00-00-00", "00:00:00", messagePart + " joined the server");
+        secretScribe.addToMessages(newMessage);
+        // Update the message list
+        secretScribe.displayMessages();
     }
 
     public void sendMessage(String username, String content) {

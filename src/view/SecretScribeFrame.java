@@ -12,6 +12,8 @@ import model.Message;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 
@@ -92,7 +94,7 @@ public class SecretScribeFrame extends javax.swing.JFrame {
             messageBar.setToolTipText("Enter the message to send");
 
             //---- serverNameLabel ----
-            serverNameLabel.setText("Chat - SERVER_NAME");
+            serverNameLabel.setText("Chat - SecretScribe");
             serverNameLabel.setFont(serverNameLabel.getFont().deriveFont(serverNameLabel.getFont().getSize() + 8f));
             serverNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -293,5 +295,9 @@ public class SecretScribeFrame extends javax.swing.JFrame {
         for (String member : members) {
             memberList.append(member + " \n");
         }
+    }
+
+    public boolean ifMessageBarSelected() {
+        return messageBar.hasFocus();
     }
 }
